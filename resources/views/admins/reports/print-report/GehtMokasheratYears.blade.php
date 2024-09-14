@@ -106,7 +106,7 @@
                 </tr>
                 </thead>
                 <tbody>
-    
+
                 @forelse($results as $result)
 
                     @php
@@ -120,7 +120,7 @@
                         <td style="width: 300px !important;font-size: 12px !important;">
                             <table class="table table-responsive table-bordered">
                                 <tbody>
-                        
+
                                 @foreach($geha_execution as $key =>  $geha)
                                 @if($key  == 60 )
                                 @break
@@ -146,7 +146,7 @@
 
                                         @php
 
-                                       
+
                                             if($geha->mokasher_count > 0 )
                                             {
                                               $performance = ($total/$geha->mokasher_count)*100 ;
@@ -168,7 +168,7 @@
                                             @endif
                                         </td>
                                     </tr>
-                                    
+
                                 @endforeach
 
                                 </tbody>

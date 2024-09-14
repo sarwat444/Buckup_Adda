@@ -60,7 +60,7 @@ class RatingMembersController extends Controller
         $gehat = json_decode(Auth::user()->gehat);
         $geha_id = $gehat[0];
         $selected_year = Execution_year::where('selected',1)->first() ;
-        $mokaser_data  = MokasherGehaInput::with('mokasher.mokasher_inputs')->where(['mokasher_id' => $mokasher_id , 'geha_id' => $geha_id])->first() ;
+        $mokaser_data  = MokasherGehaInput::with('mokasher.mokasher_inputs' , 'geha')->where(['mokasher_id' => $mokasher_id , 'geha_id' => $geha_id])->first() ;
         return view('ratingMembers.moksherat.view_achived_mokasher' , compact( 'mokaser_data' ,'selected_year')) ;
     }
     public function storeRating(Request $request)

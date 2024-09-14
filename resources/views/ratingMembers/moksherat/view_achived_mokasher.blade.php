@@ -13,11 +13,25 @@
             margin-bottom: 10px;
             font-weight: bold;
         }
-
-
+        .mokasher_name
+        {
+            font-size: 15px;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+        .mokasher_name span {
+            color: #556ee6;
+            font-weight: bold;
+        }
     </style>
 @endpush
 @section('content')
+    <div class="row">
+        <div class="col-xl-12">
+            <h3 class="mokasher_name"><span>المؤشر : </span>{{$mokaser_data->mokasher->name}} </h3>
+            <h3 class="mokasher_name"><span>الجهه التي يتم تقيمها : </span>{{$mokaser_data->geha->geha}} </h3>
+        </div>
+    </div>
     <div class="row">
         <div class="col-xl-12">
             <div class="card">

@@ -51,7 +51,7 @@
                                         $gehat = json_decode($member->gehat);
                                         $users = \App\Models\User::whereIn('id', $gehat)->get();
                                     @endphp
-                                    <select name="gehat[]" id="gehat" class="form-control select2" required multiple>
+                                    <select name="gehat[]" id="gehat" class="form-control" required >
                                         @foreach($all_gehat as $geha)
                                             <option value="{{ $geha->id }}" @if($users->contains('id', $geha->id)) selected @endif> {{$geha->geha}}</option>
                                         @endforeach

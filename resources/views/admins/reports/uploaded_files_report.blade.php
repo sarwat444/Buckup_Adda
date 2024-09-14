@@ -12,8 +12,8 @@
           rel="stylesheet" type="text/css"/>
     <!-- Responsive datatable examples -->
     <link
-        href="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css')}}"
-        rel="stylesheet" type="text/css"/>
+            href="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css')}}"
+            rel="stylesheet" type="text/css"/>
     <style>
         .performance {
             width: 51px;
@@ -68,91 +68,97 @@
             <div class="card">
                 <div class="card-body">
                     @if(!empty($results))
-                        <a class="btn btn-primary mb-2" onclick="printReport('{{ $kheta_id }}', '{{ $year_id }}')"> <i
-                                class="bx bx-printer"></i> طباعه التقرير </a>
+                        <a class="btn btn-primary mb-2" onclick="printReport('{{ $kheta_id }}', '{{ $year_id }}')">
+                            <i class="bx bx-printer"></i> طباعه التقرير
+                        </a>
                         <div class="table-responsive">
-                            <table id="datatable" class="table table-bordered table-striped ">
+                            <table id="datatable" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>الجهات المنفذه</th>
-                                    <th>المؤشر /  الأداء </th>
-                                    <th>ملاحظات</th>
+                                    <th>المؤشر</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @forelse($results as $result)
-
                                     @php
                                         $geha_execution  = \App\Models\MokasherGehaInput::with('mokasher' ,'geha')->withCount('mokasher')->where('geha_id' , $result->geha_id)->get();
                                         $total = 0 ;
-
                                     @endphp
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $geha_execution->first()->geha->geha }}</td>
                                         <td>
-                                            <table class="table table-responsive table-bordered">
-                                                <tbody>
-
-                                        @foreach($geha_execution as $geha)
-                                            <tr>
-                                            @php
-                                                /* If Geha Abloded  Two Files  it return  1 else  if  uploaded  1 it returns .5 */
-                                                 $filledCount = 0; // Variable to keep track of the number of filled evidence variables
-                                                    for ($i = 1; $i <= 4; $i++) {
-                                                        if (!empty($geha->{'evidence' . $i})) {
-                                                            $filledCount++;
-                                                        }
-                                                    }
-                                                    if ($filledCount >= 2) {
-                                                        $total = 1;
-                                                    }else if($filledCount == 1) {
-                                                        $total = .50;
-                                                    } else {
-                                                        $total = 0;
-                                                    }
-
-                                            @endphp
-
-                                            @php
-                                                if($geha->mokasher_count > 0 )
-                                                {
-                                                  $performance = ($total/$geha->mokasher_count)*100 ;
-                                                 }else
-                                                 {
-                                                     $performance = 0 ;
-                                                 }
-                                            @endphp
-
-
-                                             <td>{{ $geha->mokasher->name }}</td>
-                                                    <td>
-
-                                                    @if($performance < 50 )
-                                                        <span class="performance" style="background-color: #f00 ">{{$performance}} %</span>
-                                                    @elseif($performance  >=  50 && $performance < 100 )
-                                                        <span class="performance" style="background-color: #f8de26 ">{{round($performance)}} %</span>
-                                                    @elseif($performance  ==  100)
-                                                        <span class="performance" style="background-color: #00ff00 ">{{round($performance)}} %</span>
-                                                    @endif
-                                                    </td>
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                <tr>
+                                                    <th>اسم المؤشر</th>
+                                                    <th>الأداء</th>
+                                                    <th> الربع الأول</th>
+                                                    <th>الربع الثانى</th>
+                                                    <th> الربع الثالث </th>
+                                                    <th>  الربع الرابع</th>
                                                 </tr>
-                                            @endforeach
+                                                </thead>
+                                                <tbody>
+                                                @foreach($geha_execution as $geha)
+                                                    <tr>
+                                                        @php
+                                                            $filledCount = 0;
+                                                            for ($i = 1; $i <= 4; $i++) {
+                                                                if (!empty($geha->{'evidence' . $i})) {
+                                                                    $filledCount++;
+                                                                }
+                                                            }
+                                                            $total = $filledCount >= 2 ? 1 : ($filledCount == 1 ? 0.50 : 0);
+                                                            $performance = $geha->mokasher_count > 0 ? ($total / $geha->mokasher_count) * 100 : 0;
+                                                        @endphp
 
-                                                    </tbody>
+                                                        <td>{{ $geha->mokasher->name }}</td>
+                                                        <td style="width: 50px !important;">
+                                                            @if($performance < 50)
+                                                                <span class="performance" style="background-color: #f00">{{ $performance }} %</span>
+                                                            @elseif($performance >= 50 && $performance < 100)
+                                                                <span class="performance" style="background-color: #f8de26">{{ round($performance) }} %</span>
+                                                            @elseif($performance == 100)
+                                                                <span class="performance" style="background-color: #00ff00">{{ round($performance) }} %</span>
+                                                            @endif
+                                                        </td>
+                                                        <td style="width: 100px ;">
+                                                            @if(!empty($geha->note_part_1))
+                                                           {{ $geha->note_part_1 }}
+                                                            @else
+                                                                <span class="badge badge-soft-danger">لا يوجد</span>
+                                                            @endif
+                                                        </td>
+                                                        <td style="width: 100px ;">
+                                                            @if(!empty($geha->note_part_2))
+                                                               {{ $geha->note_part_2 }}
+                                                            @else
+                                                                <span class="badge badge-soft-danger">لا يوجد</span>
+                                                            @endif
+                                                        </td>
+                                                        <td style="width: 100px ;">
+                                                            @if(!empty($geha->note_part_3))
+                                                                {{ $geha->note_part_3 }}
+                                                            @else
+                                                                <span class="badge badge-soft-danger">لا يوجد</span>
+                                                            @endif
+                                                        </td>
+                                                        <td style="width: 100px ;">
+                                                            @if(!empty($geha->note_part_4))
+                                                               {{ $geha->note_part_4 }}
+                                                            @else
+                                                                <span class="badge badge-soft-danger">لا يوجد </span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                                </tbody>
                                             </table>
-
-                                      </td>
-                                            <td>
-                                                @if(!empty($result->note))
-                                                    {{$result->note}}
-                                                @else
-                                                    <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
-                                                @endif
-                                            </td>
+                                        </td>
                                     </tr>
-
                                 @empty
                                     <tr>
                                         <td colspan="7" class="text-center">No data available</td>
@@ -162,10 +168,11 @@
                             </table>
                         </div>
                     @else
-                        <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه  المطلوبه</span>
+                        <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه المطلوبه</span>
                     @endif
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -176,12 +183,12 @@
     <!-- Required datatable js -->
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net/js/jquery.dataTables.min.js')}}"></script>
     <script
-        src="{{asset(PUBLIC_PATH.'assets/admin/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
+            src="{{asset(PUBLIC_PATH.'assets/admin/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
     <!-- Responsive examples -->
     <script
-        src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
+            src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
     <script
-        src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js')}}"></script>
+            src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js')}}"></script>
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/select2/js/select2.min.js')}}"></script>
     <!-- Datatable init js -->
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/js/pages/datatables.init.js')}}"></script>

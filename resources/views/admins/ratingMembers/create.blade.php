@@ -51,7 +51,7 @@
                             <div class="col-md-6">
                                 <div class="mb-4">
                                     <label for="geha_id" class="form-label">الجهه </label>
-                                    <select name="geha_id[]" id="geha_id" class="form-control select2"  multiple required>
+                                    <select name="geha_id[]" id="geha_id" class="form-control"   required>
                                         @foreach($gehat as $geha)
                                             <option value="{{$geha->id}}">{{$geha->geha}}</option>
                                         @endforeach

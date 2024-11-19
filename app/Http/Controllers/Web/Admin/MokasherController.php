@@ -11,6 +11,7 @@ use App\Models\Mokasher;
 use App\Models\MokasherInput;
 use App\Models\Program;
 use App\Models\User;
+use App\Models\MokasherGehaInput ;
 use App\Traits\ResponseJson;
 use Illuminate\Http\Request;
 use App\Models\MokasherExecutionYear ;
@@ -109,4 +110,50 @@ class MokasherController extends Controller
         // Redirect back or return a response
         return redirect()->back()->with('success', 'تم أضافة بيانات المؤشر بنجاح');
     }
+
+
+    // تقرير الربع سنوي للجهات
+    public function quarter_year(Request $request , $kheta_id)
+    {
+        $gehat = User::where('is_manger', 1 )->get();
+        if ($request->isMethod('post')) {
+            if (!empty($request->geha)) {
+
+                $selected_geha = $request->geha;
+                $part = $request->part;
+
+                $results = MokasherGehaInput::with('mokasher', 'geha')
+                    ->where('geha_id', $request->geha)
+                    ->selectRaw("* ,part_{$request->part} as mostahdf , rate_part_{$request->part} as rating , note_part_{$request->part} as note")
+                    ->get();
+                return view('admins.reports.quarter_year', compact('results', 'gehat', 'selected_geha', 'part' ,'kheta_id'));
+            }
+        } else {
+            return view('admins.reports.quarter_year', compact('gehat' ,'kheta_id'));
+        }
+    }
+
+
+    public function get_users_reports(Request $request)
+    {
+
+        $gehat = $this->user->where('geha_id', Auth::user()->id)->get();
+        if ($request->isMethod('post')) {
+            if (!empty($request->sub_geha)) {
+
+                $selected_geha = $request->sub_geha;
+                $part = $request->part;
+
+                $results = MokasherGehaInput::with('mokasher', 'sub_geha')
+                    ->where('sub_geha_id', $request->sub_geha)
+                    ->selectRaw("* ,part_{$request->part} as mostahdf , rate_part_{$request->part} as rating , note_part_{$request->part} as note")
+                    ->get();
+
+                return view('gehat.reports.mokashert_parts_report', compact('results', 'gehat', 'selected_geha', 'part'));
+            }
+        } else {
+            return view('gehat.reports.mokashert_parts_report', compact('gehat'));
+        }
+    }
+
 }

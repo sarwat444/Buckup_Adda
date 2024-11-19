@@ -26,7 +26,7 @@ use App\Http\Controllers\Web\Admin\{
 
 use App\Http\Controllers\Web\Admin\Setting\{CourseSettingController};
 use Illuminate\Support\Facades\Route;
-CONST PUBLIC_PATH  = 'public/' ;
+CONST PUBLIC_PATH  = '' ;
 
 /** admin auth routes */
 Route::controller(LoginController::class)->prefix('admins')->group(function () {
@@ -143,9 +143,6 @@ Route::group(['prefix' => 'admins/dashboard', 'middleware' => 'auth:admin', 'as'
 
 
 
-
-
-
     Route::get('mokasherat_files_report/{kheta_id}/{year_id?}/{part?}' ,[DashboardController::class ,'mokasherat_files_report'])->name('mokasherat_files_report');
 
 
@@ -172,50 +169,11 @@ Route::group(['prefix' => 'admins/dashboard', 'middleware' => 'auth:admin', 'as'
 
    /** Active Users Report  */
 
-
     Route::get('/getLastSeenUsers/{kheta_id}' , [DashboardController::class, 'getLastSeenUsers'])->name('active_users');
 
+    /** تقرير  الربع سنوى  والتقرير السنوى للجهات */
 
-
-    /** lessons routes */
-    Route::resource('lessons', LessonController::class);
-    Route::get('lessons-datatables', [LessonController::class, 'lessonsDatatables'])->name('lessons.datatables');
-    Route::post('store-document-lesson', [LessonController::class, 'documentStore'])->name('lessons.store.document');
-    Route::put('update-document-lesson/{lesson}', [LessonController::class, 'documentUpdate'])->name('lessons.update.document');
-    Route::put('update-video-lesson/{lesson}', [LessonController::class, 'videoUpdate'])->name('lessons.update.video');
-
-
-    Route::post('store-video-lesson', [LessonController::class, 'videoStore'])->name('lessons.store.video');
-    Route::post('lessons/{lesson}/video/uploaded', [LessonController::class, 'assignVideoLessonToFolder'])->name('lessons.video.uploaded');
-    Route::get('lessons/{lesson}/video/status', [LessonController::class, 'checkLessonVideoStatus'])->name('lessons.video.check');
-    Route::get('lessons/{lesson}/comments', [LessonController::class, 'comments'])->name('lessons.comments');
-    Route::get('lessons/{lesson}/comments-datatables', [LessonController::class, 'lessonCommentsDatatable'])->name('lessons.comments.datatables');
-    Route::get('lessons/{lesson}/likes', [LessonController::class, 'likes'])->name('lessons.likes');
-    Route::get('lessons/{lesson}/likes-datatables', [LessonController::class, 'lessonLikesDatatable'])->name('lessons.likes.datatables');
-    Route::get('lessons/{lesson}/views', [LessonController::class, 'views'])->name('lessons.views');
-    Route::get('lessons/{lesson}/views-datatables', [LessonController::class, 'lessonViewsDatatable'])->name('lessons.views.datatables');
-
-
-    /** vimeo-folders routes */
-    Route::resource('vimeo-folders', VimeoFolderController::class);
-    Route::get('load-vimeo-folders', [VimeoFolderController::class, 'loadVimeoFolders'])->name('vimeo-folders.load');
-
-    /** courses routes */
-    Route::resource('courses', CourseController::class);
-    Route::get('courses-datatables', [CourseController::class, 'coursesDatatables'])->name('courses.datatables');
-    Route::get('courses/{course}/video', [CourseController::class, 'courseVideo'])->name('courses.video');
-    Route::post('courses/{course}/video/upload', [CourseController::class, 'courseVideoUpload'])->name('courses.video.upload');
-    Route::delete('courses/{course}/video/delete', [CourseController::class, 'courseVideoDelete'])->name('courses.video.delete');
-    Route::post('courses/{course}/video/uploaded', [CourseController::class, 'assignVideoCourseToFolder'])->name('courses.video.uploaded');
-    Route::get('courses/{course}/sections', [CourseSectionController::class, 'courseSections'])->name('courses.sections');
-
-
-    /** instructors requests routes */
-    Route::resource('instructor-requests', InstructorRequestController::class);
-    Route::get('instructors-requests-datatables', [InstructorRequestController::class, 'instructorRequestDatatables'])->name('instructors.requests.datatables');
-    Route::get('instructors-requests-view-details/{instractor}', [InstructorRequestController::class, 'instractorDetails'])->name('instructors.requests.view-details');
-    Route::post('instructors-requests/{instructorRequest}/update/status', [InstructorRequestController::class, 'updateStatus'])->name('instructors.requests.update.status');
-
+    Route::match(['get' , 'post'] ,'quarter_year/{kheta_id}' , [MokasherController::class , 'quarter_year'])->name('quarter_year') ;
 
     /** admin settings routes */
     Route::group(['prefix' => 'settings', 'as' => 'settings.courses.homepage.'], function () {

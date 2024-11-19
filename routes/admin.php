@@ -26,7 +26,7 @@ use App\Http\Controllers\Web\Admin\{
 
 use App\Http\Controllers\Web\Admin\Setting\{CourseSettingController};
 use Illuminate\Support\Facades\Route;
-CONST PUBLIC_PATH  = '' ;
+CONST PUBLIC_PATH  = 'public/' ;
 
 /** admin auth routes */
 Route::controller(LoginController::class)->prefix('admins')->group(function () {

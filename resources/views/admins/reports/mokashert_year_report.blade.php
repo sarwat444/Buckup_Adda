@@ -30,14 +30,15 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0 font-size-18">تقرير  الربع سنوى للجهات </h4>
+                <h4 class="mb-sm-0 font-size-18">تقرير  السنوى للجهات </h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">التقارير</a></li>
+                        <li class="breadcrumb-item"><a href="javascript: void(0);"> التقارير </a></li>
                         <li class="breadcrumb-item active">لوحه التحكم</li>
                     </ol>
                 </div>
+
             </div>
         </div>
     </div>
@@ -45,7 +46,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <form  method="post" action="{{route('dashboard.quarter_year' ,  $kehta_id)}}">
+                    <form  method="post" action="{{route('dashboard.get_users_reports_year' , $kehta_id)}}">
                         @csrf
                         <div class="row">
                             <div class="col-md-4">
@@ -57,16 +58,14 @@
                                     @empty
                                         <option disabled selected>لا يوجد ادارات</option>
                                     @endforelse
-
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="part"> أختر الربع السنوى </label>
-                                <select required id="part" class="form-control" name="part">
-                                    <option value="1"> الربع الأول </option>
-                                    <option value="2"> الربع الثانى  </option>
-                                    <option value="3"> الربع الثالث  </option>
-                                    <option value="4"> الربع الرابع  </option>
+                                <label for="part"> أختر السنه </label>
+                                <select required id="year_id" class="form-control" name="year_id">
+                                    @foreach($years as $year)
+                                        <option value="{{$year->id}}">  {{$year->year_name}} </option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2 mt-4">
@@ -78,14 +77,14 @@
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
                     @if(!empty($results))
-                        <a class="btn btn-primary mb-2" onclick="printReport('{{ $selected_geha }}', '{{ $part }}' ,  '{{ $kehta_id }}')"> <i class="bx bx-printer"></i> طباعه التقرير </a>
-
-                        <table class="table-responsive">
+                        <a class="btn btn-primary mb-2" onclick="printReport('{{$selected_geha }}', '{{ $year_id }}' , '{{$kehta_id}}')"> <i class="bx bx-printer"></i> طباعه التقرير </a>
+                        <div class="table-responsive">
                             <table id="datatable" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
@@ -106,22 +105,23 @@
                                            $performance = 0  ;
                                         }else
                                         {
-                                                   $performance = ($result->rating/$result->mostahdf)*100 ;
+                                            $performance = ($result->rating/$result->mostahdf)*100 ;
                                          }
+
                                     @endphp
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $result->mokasher->name }}</td>
                                         <td> {{ $result->geha->geha }}</td>
-                                        <td>{{ $result->mostahdf }}</td> <!-- Adjust this according to your data structure -->
-                                        <td>{{ $result->rating }}</td> <!-- Adjust this according to your data structure -->
+                                        <td>{{ $result->mostahdf }}</td>
+                                        <td>{{ $result->rating }}</td>
                                         <td>
                                             @if($performance < 50 )
-                                                <span class="performance" style="background-color: #f00 ">{{$performance}} %</span>
+                                                <span class="performance" style="background-color: #f00 ">{{round($performance)}} %</span>
                                             @elseif($performance  >=  50 && $performance < 100 )
-                                                <span class="performance" style="background-color: #f8de26 ">{{$performance}} %</span>
+                                                <span class="performance" style="background-color: #f8de26 ">{{round($performance)}} %</span>
                                             @elseif($performance  ==  100)
-                                                <span class="performance" style="background-color: #00ff00 ">{{$performance}} %</span>
+                                                <span class="performance" style="background-color: #00ff00 ">{{round($performance)}} %</span>
                                             @endif
                                         </td>
                                         <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
@@ -134,7 +134,7 @@
                                 @endforelse
                                 </tbody>
                             </table>
-                        </table>
+                        </div>
                     @else
                         <span class="badge badge-soft-danger font-size-13">برجاء أختيار الجهه المطلوبه</span>
                     @endif
@@ -145,40 +145,28 @@
         </div>
     </div>
 
-
-
-
-
 @endsection
-
-
-
-
-
-
-
-
 @push('scripts')
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/sweetalert2/sweetalert2.min.js')}}"></script>
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/js/pages/sweet-alerts.init.js')}}"></script>
     <!-- Required datatable js -->
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net/js/jquery.dataTables.min.js')}}"></script>
-    <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
+    <script
+            src="{{asset(PUBLIC_PATH.'assets/admin/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
     <!-- Responsive examples -->
-    <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
-    <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js')}}"></script>
+    <script
+            src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive/js/dataTables.responsive.min.js')}}"></script>
+    <script
+            src="{{asset(PUBLIC_PATH.'/assets/admin/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js')}}"></script>
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/select2/js/select2.min.js')}}"></script>
     <!-- Datatable init js -->
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/js/pages/datatables.init.js')}}"></script>
-
     <script>
-        function printReport(geha, part , kehta_id) {
-            window.location.href = '{{ route('dashboard.print_users_part', ['geha' => ':geha', 'part' => ':part' , 'kehta_id' => ':kehta_id']) }}'
+        function printReport(geha, year_id , kehta_id) {
+            window.location.href = '{{ route('dashboard.print_users_years', ['geha' => ':geha', 'year_id' => ':year_id' , 'kehta_id' => ':kehta_id']) }}'
                 .replace(':geha', geha)
-                .replace(':part', part)
-                .replace(':kehta_id', kehta_id);
+                .replace(':year_id', year_id)
+              .replace(':kehta_id', kehta_id);
         }
     </script>
-
-
 @endpush

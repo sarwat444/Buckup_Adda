@@ -185,7 +185,7 @@ class MokasherController extends Controller
     public function print_users_part($geha, $part , $kehta_id)
     {
 
-        $gehat = User::where(['is_manger'=> 1 , 'kheta_id' => $kehta_id])->get();
+        $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => $kehta_id])->get();
         $kheta = Kheta::where('id' ,  $kehta_id)->first() ;
         $results = MokasherGehaInput::with('mokasher', 'geha')
             ->where('geha_id', $geha)

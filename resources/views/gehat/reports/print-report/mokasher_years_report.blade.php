@@ -111,6 +111,7 @@
         </thead>
         <tbody>
         @forelse($results as $result)
+            @if(!empty($result->mokasher) && $result->mokasher->addedBy == 0  )
             @php
                 if($result->mostahdf == 0 )
                 {
@@ -142,6 +143,7 @@
                     @endif
                 </td>
             </tr>
+            @endif
         @empty
             <tr>
                 <td colspan="7" class="text-center">لا تتوفر بيانات</td>

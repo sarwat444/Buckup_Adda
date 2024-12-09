@@ -110,6 +110,7 @@
                     @php
                         $geha_execution = \App\Models\MokasherGehaInput::with('mokasher', 'geha')->withCount('mokasher')->where('geha_id', $result->geha_id)->get();
                     @endphp
+                    @if($result->mokasher->addedBy == 0 )
                     <tr>
                         <td style="width: 25px !important;">{{ $loop->iteration }}</td>
                         <td style="width: 300px !important;">{{ $result->mokasher->name }}</td>
@@ -141,6 +142,7 @@
                             @endif
                         </td>
                     </tr>
+                    @endif
                 @else
                     @php
                         $geha_execution = \App\Models\MokasherGehaInput::with('mokasher', 'geha')->withCount('mokasher')->where('geha_id', $result->geha_id)->get();
@@ -149,6 +151,7 @@
                         $types = json_decode($geha_execution->first()->mokasher->type);
                     @endphp
                     @if(in_array(0, $types))
+                        @if($result->mokasher->addedBy == 0 )
                         <tr>
                             <td style="width: 25px !important;">{{ $loop->iteration }}</td>
                             <td style="width: 100px !important;" rowspan="{{ $geha_execution->count() }}">{{ $geha_execution->first()->geha->geha }}</td>
@@ -183,6 +186,7 @@
                                 @endif
                             </td>
                         </tr>
+                        @endif
                     @endif
                 @endif
             @empty

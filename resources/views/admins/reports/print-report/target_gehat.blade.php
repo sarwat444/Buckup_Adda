@@ -129,26 +129,31 @@
                                 @php
                                     $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id', $result->mokasher_id)->get();
                                 @endphp
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $result->mokasher->name }}</td>
-                                    <td colspan="6">
-                                        <table class="table table-bordered mb-0">
-                                            <tbody>
-                                                @foreach($geha_execution as $geha)
-                                                    <tr>
-                                                        <td style="width: 387px;">{{ $geha->geha->geha }}</td>
-                                                        <td style="width: 100px">{{ $geha->target }}</td>
-                                                        <td style="width: 100px">{{ $geha->part_1 }}</td>
-                                                        <td style="width: 100px">{{ $geha->part_2 }}</td>
-                                                        <td style="width: 100px">{{ $geha->part_3 }}</td>
-                                                        <td style="width: 100px">{{ $geha->part_4 }}</td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
+
+                                @if($result->mokasher->addedBy == 0 )
+
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $result->mokasher->name }}</td>
+                                        <td colspan="6">
+                                            <table class="table table-bordered mb-0">
+                                                <tbody>
+                                                    @foreach($geha_execution as $geha)
+                                                        <tr>
+                                                            <td style="width: 387px;">{{ $geha->geha->geha }}</td>
+                                                            <td style="width: 100px">{{ $geha->target }}</td>
+                                                            <td style="width: 100px">{{ $geha->part_1 }}</td>
+                                                            <td style="width: 100px">{{ $geha->part_2 }}</td>
+                                                            <td style="width: 100px">{{ $geha->part_3 }}</td>
+                                                            <td style="width: 100px">{{ $geha->part_4 }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                @endif
                             @empty
                                 <tr>
                                     <td colspan="8" class="text-center">No data available</td>

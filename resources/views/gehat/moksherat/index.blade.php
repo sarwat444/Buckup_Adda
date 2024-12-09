@@ -38,13 +38,6 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <button type="button" class="btn btn-primary waves-effect waves-light"
-                                data-bs-toggle="modal" data-bs-target="#create-new-category">
-                            <i class="bx bx-add-to-queue font-size-16 align-middle me-2"></i>أضافه مؤشر جديد
-                        </button>
-
-                    </div>
                     <div class="table-responsive">
                     <table id="datatable" class="table table-bordered ">
                         <thead>

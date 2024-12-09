@@ -113,6 +113,7 @@
                                                     </thead>
                                                     <tbody>
                                                     @foreach($geha_execution as $geha)
+                                                        @if($geha->addedBy == 0 )
                                                         @php
                                                             $total_parts = $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4;
                                                             $performance = $total_parts > 0
@@ -167,6 +168,7 @@
                                                             </td>
 
                                                         </tr>
+                                                        @endif
                                                     @endforeach
                                                     </tbody>
                                                 </table>

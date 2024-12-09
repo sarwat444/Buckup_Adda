@@ -120,29 +120,31 @@
                    $performance = ($result->rating / $result->mostahdf) * 100;
                 }
             @endphp
-            <tr style="padding: 20px">
-                <td style="padding: 15px">{{ $loop->iteration }}</td>
-                <td style=" width:200px;">{{ $result->mokasher->name }}</td>
-                <td>{{ $result->geha->geha }}</td>
-                <td>{{ $result->mostahdf }}</td>
-                <td>{{ $result->rating }}</td>
-                <td>
-                    @if($performance < 50 )
-                        <span class="performance" style="background-color: #f00; margin-top: 10px">{{ $performance }} %</span>
-                    @elseif($performance >= 50 && $performance < 100 )
-                        <span class="performance" style="background-color: #f8de26; margin-top: 10px">{{ $performance }} %</span>
-                    @elseif($performance == 100)
-                        <span class="performance" style="background-color: #00ff00; margin-top: 10px">{{ $performance }} %</span>
-                    @endif
-                </td>
-                <td>
-                    @if(!empty($result->note))
-                        {{ $result->note }}
-                    @else
-                        <span class="badge badge-soft-danger">لا يوجد ملاحظات</span>
-                    @endif
-                </td>
-            </tr>
+            @if($result->mokasher->addedBy == 0 )
+                <tr style="padding: 20px">
+                    <td style="padding: 15px">{{ $loop->iteration }}</td>
+                    <td style=" width:200px;">{{ $result->mokasher->name }}</td>
+                    <td>{{ $result->geha->geha }}</td>
+                    <td>{{ $result->mostahdf }}</td>
+                    <td>{{ $result->rating }}</td>
+                    <td>
+                        @if($performance < 50 )
+                            <span class="performance" style="background-color: #f00; margin-top: 10px">{{ $performance }} %</span>
+                        @elseif($performance >= 50 && $performance < 100 )
+                            <span class="performance" style="background-color: #f8de26; margin-top: 10px">{{ $performance }} %</span>
+                        @elseif($performance == 100)
+                            <span class="performance" style="background-color: #00ff00; margin-top: 10px">{{ $performance }} %</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if(!empty($result->note))
+                            {{ $result->note }}
+                        @else
+                            <span class="badge badge-soft-danger">لا يوجد ملاحظات</span>
+                        @endif
+                    </td>
+                </tr>
+            @endif
         @empty
             <tr>
                 <td colspan="7" class="text-center">لا تتوفر بيانات</td>

@@ -109,6 +109,7 @@
                                          }
 
                                     @endphp
+                                    @if($result->mokasher->addedBy == 0 )
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $result->mokasher->name }}</td>
@@ -126,7 +127,7 @@
                                         </td>
                                         <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
                                     </tr>
-
+                                    @endif
                                 @empty
                                     <tr>
                                         <td colspan="7" class="text-center">No data available</td>

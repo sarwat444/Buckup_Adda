@@ -30,7 +30,6 @@ class MokasherController extends Controller
 
     public function show($program_id = null): \Illuminate\View\View
     {
-
         $selectedYear = Execution_year::whereHas('MokasherExcutionYears', function ($query) {
             $query->where('value', '!=', '0');
         })->where('selected', 1)->first();
@@ -43,8 +42,7 @@ class MokasherController extends Controller
 
             $mokashert = $this->mokasherModel
                 ->where(function($query) use ($authUserId, $selectedYearId) { // Pass $selectedYearId here
-                    $query->where('addedBy', $authUserId)
-                          ->orWhere('addedBy', 0)
+                    $query->where('addedBy', 0)
                           ->orWhere(function($query) use ($authUserId, $selectedYearId) { // And here
                               $query->where('addedBy', '!=', $authUserId)
                                     ->whereHas('mokasher_execution_years', function ($query) use ($selectedYearId) {

@@ -101,7 +101,7 @@ class UsersController extends Controller
                 $selected_geha = $request->sub_geha;
                 $part = $request->part;
 
-                $results = MokasherGehaInput::with('mokasher', 'sub_geha')
+                $results = MokasherGehaInput::with('sub_geha' ,'mokasher')
                     ->where('sub_geha_id', $request->sub_geha)
                     ->selectRaw("* ,part_{$request->part} as mostahdf , rate_part_{$request->part} as rating , note_part_{$request->part} as note")
                     ->get();
@@ -148,7 +148,6 @@ class UsersController extends Controller
 
     public function print_users_part($sub_geha, $part)
     {
-
         $gehat = User::where('geha_id', Auth::user()->id)->get();
         $kheta = Kheta::where('id' ,  Auth::user()->kehta_id)->first() ;
         $results = MokasherGehaInput::with('mokasher', 'sub_geha')

@@ -100,98 +100,103 @@
                                         @php
                                             $geha_execution = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id' , $result->mokasher_id)->get();
                                         @endphp
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $result->mokasher->name }}</td>
-                                            <td>
-                                                <table class="table table-bordered table-responsive">
 
-                                                    @foreach($geha_execution as $geha)
-                                                        <tr>
-                                                            @php
-                                                                if($geha->{"part_".$part} > 0 )
-                                                                 {
-                                                                     $performance = ($geha->{"rate_part_".$part}) / ($geha->{"part_".$part}) * 100;
-                                                                 }else{
-                                                                    $performance = 0 ;
-                                                                 }
-                                                            @endphp
-                                                            <td>{{ $geha->geha->geha }}</td>
-                                                            <td>
-                                                                @if($performance < 50)
-                                                                    <span class="performance"
-                                                                          style="background-color: #f00">{{ round($performance) }} %</span>
-                                                                @elseif($performance >= 50 && $performance < 100)
-                                                                    <span class="performance"
-                                                                          style="background-color: #f8de26">{{ round($performance) }} %</span>
-                                                                @elseif($performance == 100)
-                                                                    <span class="performance"
-                                                                          style="background-color: #00ff00">{{ round($performance) }} %</span>
-                                                                @endif
+                                        @if($result->mokasher->addedBy == 0 )
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $result->mokasher->name }}</td>
+                                                <td>
+                                                    <table class="table table-bordered table-responsive">
 
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                </table>
-                                            </td>
-                                            <td>
-                                                @if(!empty($result->note))
-                                                    {{ $result->note }}
-                                                @else
-                                                    <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
-                                                @endif
-                                            </td>
-                                        </tr>
+                                                        @foreach($geha_execution as $geha)
+                                                            <tr>
+                                                                @php
+                                                                    if($geha->{"part_".$part} > 0 )
+                                                                     {
+                                                                         $performance = ($geha->{"rate_part_".$part}) / ($geha->{"part_".$part}) * 100;
+                                                                     }else{
+                                                                        $performance = 0 ;
+                                                                     }
+                                                                @endphp
+                                                                <td>{{ $geha->geha->geha }}</td>
+                                                                <td>
+                                                                    @if($performance < 50)
+                                                                        <span class="performance"
+                                                                              style="background-color: #f00">{{ round($performance) }} %</span>
+                                                                    @elseif($performance >= 50 && $performance < 100)
+                                                                        <span class="performance"
+                                                                              style="background-color: #f8de26">{{ round($performance) }} %</span>
+                                                                    @elseif($performance == 100)
+                                                                        <span class="performance"
+                                                                              style="background-color: #00ff00">{{ round($performance) }} %</span>
+                                                                    @endif
+
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    @if(!empty($result->note))
+                                                        {{ $result->note }}
+                                                    @else
+                                                        <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endif
 
                                     @else
                                         @php
                                             $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id' , $result->mokasher_id)->get();
                                         @endphp
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $result->mokasher->name }}</td>
-                                            <td>
-                                                <table class="table table-bordered table-responsive">
+                                        @if($result->mokasher->addedBy == 0 )
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $result->mokasher->name }}</td>
+                                                <td>
+                                                    <table class="table table-bordered table-responsive">
 
-                                                    @foreach($geha_execution as $geha)
-                                                        <tr>
-                                                            @php
-                                                                $total_rating =  $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4 ;
-                                                                if($total_rating > 0 )
-                                                                {
-                                                                   $performance = ($geha->rate_part_1 + $geha->rate_part_2 + $geha->rate_part_3 + $geha->rate_part_4) / ($geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4) * 100;
-                                                                }else
-                                                                 {
-                                                                    $performance = 0 ;
-                                                                 }
+                                                        @foreach($geha_execution as $geha)
+                                                            <tr>
+                                                                @php
+                                                                    $total_rating =  $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4 ;
+                                                                    if($total_rating > 0 )
+                                                                    {
+                                                                       $performance = ($geha->rate_part_1 + $geha->rate_part_2 + $geha->rate_part_3 + $geha->rate_part_4) / ($geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4) * 100;
+                                                                    }else
+                                                                     {
+                                                                        $performance = 0 ;
+                                                                     }
 
-                                                            @endphp
+                                                                @endphp
 
-                                                            <td>{{ $geha->geha->geha }} </td>
-                                                            <td>
-                                                                @if($performance < 50 )
-                                                                    <span class="performance"
-                                                                          style="background-color: #f00 ">{{round($performance)}} %</span>
-                                                                @elseif($performance  >=  50 && $performance < 100 )
-                                                                    <span class="performance"
-                                                                          style="background-color: #f8de26 ">{{round($performance)}} %</span>
-                                                                @elseif($performance  ==  100)
-                                                                    <span class="performance"
-                                                                          style="background-color: #00ff00 ">{{round($performance)}} %</span>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
+                                                                <td>{{ $geha->geha->geha }} </td>
+                                                                <td>
+                                                                    @if($performance < 50 )
+                                                                        <span class="performance"
+                                                                              style="background-color: #f00 ">{{round($performance)}} %</span>
+                                                                    @elseif($performance  >=  50 && $performance < 100 )
+                                                                        <span class="performance"
+                                                                              style="background-color: #f8de26 ">{{round($performance)}} %</span>
+                                                                    @elseif($performance  ==  100)
+                                                                        <span class="performance"
+                                                                              style="background-color: #00ff00 ">{{round($performance)}} %</span>
+                                                                    @endif
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
 
-                                                </table>
-                                            </td>
+                                                    </table>
+                                                </td>
 
-                                            <td> @if(!empty($result->note))
-                                                    {{$result->note}}
-                                                @else
-                                                    <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
-                                                @endif</td>
-                                        </tr>
+                                                <td> @if(!empty($result->note))
+                                                        {{$result->note}}
+                                                    @else
+                                                        <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
+                                                    @endif</td>
+                                            </tr>
+                                        @endif
                                     @endif
 
                                 @empty

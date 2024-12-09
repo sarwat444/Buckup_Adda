@@ -103,57 +103,59 @@
                                                 </thead>
                                                 <tbody>
                                                 @foreach($geha_execution as $geha)
-                                                    <tr>
-                                                        @php
-                                                            $filledCount = 0;
-                                                            for ($i = 1; $i <= 4; $i++) {
-                                                                if (!empty($geha->{'evidence' . $i})) {
-                                                                    $filledCount++;
+                                                    @if($geha->mokasher->addedBy == 0 )
+                                                        <tr>
+                                                            @php
+                                                                $filledCount = 0;
+                                                                for ($i = 1; $i <= 4; $i++) {
+                                                                    if (!empty($geha->{'evidence' . $i})) {
+                                                                        $filledCount++;
+                                                                    }
                                                                 }
-                                                            }
-                                                            $total = $filledCount >= 2 ? 1 : ($filledCount == 1 ? 0.50 : 0);
-                                                            $performance = $geha->mokasher_count > 0 ? ($total / $geha->mokasher_count) * 100 : 0;
-                                                        @endphp
+                                                                $total = $filledCount >= 2 ? 1 : ($filledCount == 1 ? 0.50 : 0);
+                                                                $performance = $geha->mokasher_count > 0 ? ($total / $geha->mokasher_count) * 100 : 0;
+                                                            @endphp
 
-                                                        <td>{{ $geha->mokasher->name }}</td>
-                                                        <td style="width: 50px !important;">
-                                                            @if($performance < 50)
-                                                                <span class="performance" style="background-color: #f00">{{ $performance }} %</span>
-                                                            @elseif($performance >= 50 && $performance < 100)
-                                                                <span class="performance" style="background-color: #f8de26">{{ round($performance) }} %</span>
-                                                            @elseif($performance == 100)
-                                                                <span class="performance" style="background-color: #00ff00">{{ round($performance) }} %</span>
-                                                            @endif
-                                                        </td>
-                                                        <td style="width: 100px ;">
-                                                            @if(!empty($geha->note_part_1))
-                                                           {{ $geha->note_part_1 }}
-                                                            @else
-                                                                <span class="badge badge-soft-danger">لا يوجد</span>
-                                                            @endif
-                                                        </td>
-                                                        <td style="width: 100px ;">
-                                                            @if(!empty($geha->note_part_2))
-                                                               {{ $geha->note_part_2 }}
-                                                            @else
-                                                                <span class="badge badge-soft-danger">لا يوجد</span>
-                                                            @endif
-                                                        </td>
-                                                        <td style="width: 100px ;">
-                                                            @if(!empty($geha->note_part_3))
-                                                                {{ $geha->note_part_3 }}
-                                                            @else
-                                                                <span class="badge badge-soft-danger">لا يوجد</span>
-                                                            @endif
-                                                        </td>
-                                                        <td style="width: 100px ;">
-                                                            @if(!empty($geha->note_part_4))
-                                                               {{ $geha->note_part_4 }}
-                                                            @else
-                                                                <span class="badge badge-soft-danger">لا يوجد </span>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
+                                                            <td>{{ $geha->mokasher->name }}</td>
+                                                            <td style="width: 50px !important;">
+                                                                @if($performance < 50)
+                                                                    <span class="performance" style="background-color: #f00">{{ $performance }} %</span>
+                                                                @elseif($performance >= 50 && $performance < 100)
+                                                                    <span class="performance" style="background-color: #f8de26">{{ round($performance) }} %</span>
+                                                                @elseif($performance == 100)
+                                                                    <span class="performance" style="background-color: #00ff00">{{ round($performance) }} %</span>
+                                                                @endif
+                                                            </td>
+                                                            <td style="width: 100px ;">
+                                                                @if(!empty($geha->note_part_1))
+                                                               {{ $geha->note_part_1 }}
+                                                                @else
+                                                                    <span class="badge badge-soft-danger">لا يوجد</span>
+                                                                @endif
+                                                            </td>
+                                                            <td style="width: 100px ;">
+                                                                @if(!empty($geha->note_part_2))
+                                                                   {{ $geha->note_part_2 }}
+                                                                @else
+                                                                    <span class="badge badge-soft-danger">لا يوجد</span>
+                                                                @endif
+                                                            </td>
+                                                            <td style="width: 100px ;">
+                                                                @if(!empty($geha->note_part_3))
+                                                                    {{ $geha->note_part_3 }}
+                                                                @else
+                                                                    <span class="badge badge-soft-danger">لا يوجد</span>
+                                                                @endif
+                                                            </td>
+                                                            <td style="width: 100px ;">
+                                                                @if(!empty($geha->note_part_4))
+                                                                   {{ $geha->note_part_4 }}
+                                                                @else
+                                                                    <span class="badge badge-soft-danger">لا يوجد </span>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                 @endforeach
                                                 </tbody>
                                             </table>

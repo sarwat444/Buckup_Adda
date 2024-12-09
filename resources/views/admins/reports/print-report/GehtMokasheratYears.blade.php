@@ -114,6 +114,7 @@
                         $total = 0 ;
 
                     @endphp
+                    @if($result->mokasher->addedBy == 0 )
                     <tr>
                         <td  style="width: 25px !important;" >{{ $loop->iteration }}</td>
                         <td  style="width:100px !important;" >{{ $geha_execution->first()->geha->geha }}</td>
@@ -182,6 +183,7 @@
                             @endif
                         </td>
                     </tr>
+                    @endif
 
                 @empty
                     <tr>

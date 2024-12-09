@@ -100,6 +100,7 @@
                                 </thead>
                                 <tbody>
                                 @forelse($results as $result)
+
                                     @php
                                         if($result->mostahdf == 0 )
                                         {
@@ -109,24 +110,26 @@
                                                    $performance = ($result->rating/$result->mostahdf)*100 ;
                                          }
                                     @endphp
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $result->mokasher->name }}</td>
-                                        <td> {{ $result->geha->geha }}</td>
-                                        <td>{{ $result->mostahdf }}</td> <!-- Adjust this according to your data structure -->
-                                        <td>{{ $result->rating }}</td> <!-- Adjust this according to your data structure -->
-                                        <td>
-                                            @if($performance < 50 )
-                                                <span class="performance" style="background-color: #f00 ">{{$performance}} %</span>
-                                            @elseif($performance  >=  50 && $performance < 100 )
-                                                <span class="performance" style="background-color: #f8de26 ">{{$performance}} %</span>
-                                            @elseif($performance  ==  100)
-                                                <span class="performance" style="background-color: #00ff00 ">{{$performance}} %</span>
-                                            @endif
-                                        </td>
-                                        <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
-                                    </tr>
 
+                                    @if($result->mokasher->addedBy == 0 )
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $result->mokasher->name }}</td>
+                                                    <td> {{ $result->geha->geha }}</td>
+                                                    <td>{{ $result->mostahdf }}</td> <!-- Adjust this according to your data structure -->
+                                                    <td>{{ $result->rating }}</td> <!-- Adjust this according to your data structure -->
+                                                    <td>
+                                                        @if($performance < 50 )
+                                                            <span class="performance" style="background-color: #f00 ">{{$performance}} %</span>
+                                                        @elseif($performance  >=  50 && $performance < 100 )
+                                                            <span class="performance" style="background-color: #f8de26 ">{{$performance}} %</span>
+                                                        @elseif($performance  ==  100)
+                                                            <span class="performance" style="background-color: #00ff00 ">{{$performance}} %</span>
+                                                        @endif
+                                                    </td>
+                                                    <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
+                                                </tr>
+                                    @endif
                                 @empty
                                     <tr>
                                         <td colspan="7" class="text-center">No data available</td>
@@ -144,19 +147,7 @@
             </div>
         </div>
     </div>
-
-
-
-
-
 @endsection
-
-
-
-
-
-
-
 
 @push('scripts')
     <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/sweetalert2/sweetalert2.min.js')}}"></script>

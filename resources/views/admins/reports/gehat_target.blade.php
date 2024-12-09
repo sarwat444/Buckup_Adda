@@ -86,6 +86,7 @@
                                         @php
                                             $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id', $result->mokasher_id)->get();
                                         @endphp
+                                        @if($result->mokasher->addedBy == 0 )
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $result->mokasher->name }}</td>
@@ -106,6 +107,7 @@
                                                 </table>
                                             </td>
                                         </tr>
+                                        @endif
                                     @empty
                                         <tr>
                                             <td colspan="8" class="text-center">No data available</td>

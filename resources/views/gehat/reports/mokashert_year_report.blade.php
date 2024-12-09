@@ -98,6 +98,7 @@
                             </thead>
                             <tbody>
                             @forelse($results as $result)
+                                @if(!empty($result->mokasher) && $result->mokasher->addedBy == 0  )
                                 @php
                                          if($result->mostahdf == 0 )
                                          {
@@ -125,10 +126,10 @@
                                     </td>
                                     <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
                                 </tr>
-
+                                @endif
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">No data available</td>
+                                    <td colspan="7" class="text-center">لا يوجد بيانات</td>
                                 </tr>
                             @endforelse
                             </tbody>

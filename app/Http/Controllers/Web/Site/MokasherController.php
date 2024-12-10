@@ -204,9 +204,12 @@ class MokasherController extends Controller
     {
         $mokashert = Mokasher::whereHas('mokasher_geha_inputs', function ($query) {
             $query->where('sub_geha_id', Auth::user()->id);
-        })->with(['mokasher_geha_inputs' => function ($query) {
+        })->with('program' , 'program.goal' , 'program.goal.objective')->with(['mokasher_geha_inputs' => function ($query) {
             $query->where('sub_geha_id', Auth::user()->id);
         }])->with('addedBy_fun')->get();
+
+
+
         return view('sub_geha.moksherat.index', compact('mokashert'));
     }
 

@@ -100,7 +100,7 @@
                                 </thead>
                                 <tbody>
                                 @forelse($results as $result)
-
+                                    @dd($result)
                                     @php
                                         if($result->mostahdf == 0 )
                                         {
@@ -128,7 +128,9 @@
                                                         @endif
                                                     </td>
                                                     <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
+
                                                 </tr>
+
                                     @endif
                                 @empty
                                     <tr>

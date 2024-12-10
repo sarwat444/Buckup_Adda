@@ -136,10 +136,16 @@
                         @endif
                     </td>
                     <td>
-                        @if(!empty($result->note))
-                            {{ $result->note }}
+                        @if(!empty($result->note_part_1))
+                            {{$result->note_part_1}}
+                        @elseif(!empty($result->note_part_2))
+                            {{$result->note_part_2}}
+                        @elseif(!empty($result->note_part_3))
+                            {{$result->note_part_3}}
+                        @elseif(!empty($result->note_part_4))
+                            {{$result->note_part_4}}
                         @else
-                            <span class="badge badge-soft-danger">لا يوجد ملاحظات</span>
+                            <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
                         @endif
                     </td>
                 </tr>

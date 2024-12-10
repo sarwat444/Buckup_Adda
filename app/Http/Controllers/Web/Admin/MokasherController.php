@@ -151,7 +151,6 @@ class MokasherController extends Controller
                     ->where(['geha_id' => $request->geha, 'year_id' => $request->year_id])
                     ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
                     ->get();
-
                 return view('admins.reports.mokashert_year_report', compact('results', 'gehat', 'geha', 'year_id', 'years' ,'kehta_id' ,'selected_geha'));
             }
         } else {

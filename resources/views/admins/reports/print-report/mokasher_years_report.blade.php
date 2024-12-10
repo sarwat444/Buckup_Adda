@@ -111,31 +111,37 @@
         </tr>
         </thead>
         <tbody>
-        @forelse($results as $result)
+        @foreach($results as $result)
             @php
-                if($result->mostahdf == 0 )
-                {
-                   $performance = 0  ;
+                // Check for division by zero and calculate performance
+                if ($result->mostahdf == 0) {
+                    $performance = 0; // No target, no performance
                 } else {
-                   $performance = ($result->rating / $result->mostahdf) * 100;
+                    $performance = ($result->rating / $result->mostahdf) * 100;
+                    // Cap performance to 100% if it exceeds
+                    if ($performance > 100) {
+                        $performance = 100;
+                    }
                 }
             @endphp
-            @if($result->mokasher->addedBy == 0 )
+
+            @if($result->mokasher->addedBy == 0)
                 <tr>
+                    <td>{{ $loop->iteration }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->program }}</td>
-                    <td><p style="font-weight: 500; width: 250px; font-size: 12px">{{ $result->mokasher->name }}</p></td>
+                    <td class="text-primary">{{ $result->mokasher->program->goal->objective->objective }}</td>
+                    <td>{{ $result->mokasher->name }}</td>
+                    <td>{{ $result->geha->geha }}</td>
                     <td>{{ $result->mostahdf }}</td>
                     <td>{{ $result->rating }}</td>
                     <td>
-                        @if($performance < 50 )
-                            <span class="performance" style="background-color: #f00; margin-top: 10px">{{ round($performance) }} %</span>
-                        @elseif($performance >= 50 && $performance < 100 )
-                            <span class="performance" style="background-color: #f8de26; margin-top: 10px">{{ round($performance)}} %</span>
+                        @if($performance < 50)
+                            <span class="performance" style="background-color: #f00">{{ round($performance) }} %</span>
+                        @elseif($performance >= 50 && $performance < 100)
+                            <span class="performance" style="background-color: #f8de26">{{ round($performance) }} %</span>
                         @elseif($performance == 100)
-                            <span class="performance" style="background-color: #00ff00; margin-top: 10px">{{ round($performance)}} %</span>
-                       @else
-                            <span class="performance" style="background-color: #f00; margin-top: 10px">0 %</span>
+                            <span class="performance" style="background-color: #00ff00">{{ round($performance) }} %</span>
                         @endif
                     </td>
                     <td>
@@ -153,11 +159,8 @@
                     </td>
                 </tr>
             @endif
-        @empty
-            <tr>
-                <td colspan="7" class="text-center">لا تتوفر بيانات</td>
-            </tr>
-        @endforelse
+        @endforeach
+
         </tbody>
     </table>
 @else

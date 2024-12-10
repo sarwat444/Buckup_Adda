@@ -129,6 +129,8 @@
                                                 <span class="performance" style="background-color: #f8de26 ">{{round($performance)}} %</span>
                                             @elseif($performance  ==  100)
                                                 <span class="performance" style="background-color: #00ff00 ">{{round($performance)}} %</span>
+                                                @else
+                                                <span class="performance" style="background-color: #f00 ">0 %</span>
                                             @endif
                                         </td>
                                         <td>

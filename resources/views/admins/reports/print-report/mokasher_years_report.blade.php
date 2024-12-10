@@ -100,8 +100,6 @@
     <table class="table table-bordered table-striped">
         <thead>
         <tr >
-            <th >#</th>
-
             <th>الهدف</th>
             <th>البرنامج</th>
             <th>المؤشر</th>
@@ -124,7 +122,6 @@
             @endphp
             @if($result->mokasher->addedBy == 0 )
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->program }}</td>
                     <td><p style="font-weight: 500; width: 250px; font-size: 12px">{{ $result->mokasher->name }}</p></td>
@@ -138,6 +135,8 @@
                             <span class="performance" style="background-color: #f8de26; margin-top: 10px">{{ round($performance)}} %</span>
                         @elseif($performance == 100)
                             <span class="performance" style="background-color: #00ff00; margin-top: 10px">{{ round($performance)}} %</span>
+                       @else
+                            <span class="performance" style="background-color: #f00; margin-top: 10px">0 %</span>
                         @endif
                     </td>
                     <td>

@@ -89,6 +89,9 @@
                                 <thead>
                                 <tr>
                                     <th>#</th>
+                                    <th>الغاية</th>
+                                    <th>الهدف</th>
+                                    <th>البرنامج</th>
                                     <th>المؤشر</th>
                                     <th>الجهه</th>
                                     <th>المستهدف</th>
@@ -112,6 +115,9 @@
                                     @if($result->mokasher->addedBy == 0 )
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
+                                        <td class="text-primary">{{ $result->mokasher->program->program }}</td>
+                                        <td class="text-primary">{{ $result->mokasher->program->goal->objective->objective }}</td>
                                         <td>{{ $result->mokasher->name }}</td>
                                         <td> {{ $result->geha->geha }}</td>
                                         <td>{{ $result->mostahdf }}</td>

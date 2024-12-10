@@ -138,7 +138,6 @@ class MokasherController extends Controller
 
     public function get_users_reports_year(Request $request , $kehta_id )
     {
-
         $geha = $request->geha;
         $year_id = $request->year_id;
         $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => $kehta_id])->get();
@@ -147,10 +146,11 @@ class MokasherController extends Controller
         if ($request->isMethod('post')) {
             if (!empty($request->geha)) {
                 $selected_geha = $request->geha;
-                $results = MokasherGehaInput::with('mokasher', 'geha')
+                $results = MokasherGehaInput::with('mokasher', 'geha' , 'mokasher.program' , 'mokasher.program.goal' , 'mokasher.program.goal.objective')
                     ->where(['geha_id' => $request->geha, 'year_id' => $request->year_id])
                     ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
                     ->get();
+
                 return view('admins.reports.mokashert_year_report', compact('results', 'gehat', 'geha', 'year_id', 'years' ,'kehta_id' ,'selected_geha'));
             }
         } else {
@@ -212,7 +212,7 @@ class MokasherController extends Controller
         $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => $kehta_id])->get();
         $kheta = Kheta::where('id' ,  $kehta_id)->first() ;
 
-        $results = MokasherGehaInput::with('mokasher', 'geha')
+        $results = MokasherGehaInput::with('mokasher', 'geha' , 'mokasher.program' , 'mokasher.program.goal' , 'mokasher.program.goal.objective')
             ->where(['geha_id' => $geha, 'year_id' =>$year_id])
             ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
             ->get();

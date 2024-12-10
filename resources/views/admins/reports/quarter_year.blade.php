@@ -100,7 +100,6 @@
                                 </thead>
                                 <tbody>
                                 @forelse($results as $result)
-                                    @dd($result)
                                     @php
                                         if($result->mostahdf == 0 )
                                         {

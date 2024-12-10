@@ -104,7 +104,6 @@
             <th>الهدف</th>
             <th>البرنامج</th>
             <th>المؤشر</th>
-            <th >الجهة</th>
             <th >المستهدف</th>
             <th >المنجز</th>
             <th >الأداء</th>
@@ -126,7 +125,6 @@
                     <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->program }}</td>
                     <td><p style="font-weight: 500; width: 250px; font-size: 12px">{{ $result->mokasher->name }}</p></td>
-                    <td>{{ $result->geha->geha }}</td>
                     <td>{{ $result->mostahdf }}</td>
                     <td>{{ $result->rating }}</td>
                     <td>

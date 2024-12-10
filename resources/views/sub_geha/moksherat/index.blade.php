@@ -36,7 +36,6 @@
                             <thead>
                             <tr>
                                 <th>#</th>
-                                <th>الغاية</th>
                                 <th>الهدف</th>
                                 <th>البرنامج</th>
                                 <th>المؤشر</th>
@@ -51,7 +50,6 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td class="text-primary">{{ $mokasher->program->goal->goal }}</td>
                                     <td class="text-primary">{{ $mokasher->program->program }}</td>
-                                    <td class="text-primary">{{ $mokasher->program->goal->objective->objective }}</td>
                                     <td style="text-align: right">{{ $mokasher->name }} </td>
                                     <td style="text-align: right">
                                         @if(!empty($mokasher->type))

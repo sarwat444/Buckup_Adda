@@ -127,7 +127,6 @@
 
             @if($result->mokasher->addedBy == 0)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->program }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->goal->objective->objective }}</td>

@@ -220,7 +220,7 @@ class MokasherController extends Controller
                 'sub_geha_id' => Auth::id(),
                 'geha_id' => Auth::user()->geha_id
             ]);
-        }])->where('id', $id)->first();
+        }])->with('program' , 'program.goal')->where('id', $id)->first();
         
         return view('sub_geha.moksherat.mokasher_data.create', compact('mokasher'));
     }

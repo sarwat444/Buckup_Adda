@@ -11,6 +11,9 @@
     </style>
 @endpush
 @section('content')
+    <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+        <h4 class="mb-sm-0" style="font-size: 14px !important;"> {{ $mokasher->program->program }} / {{ $mokasher->program->goal->goal }}  / <span class="text-primary">{{$mokasher->name}}</span> </h4>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-7">
             <div class="card">

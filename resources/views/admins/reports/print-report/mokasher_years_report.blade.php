@@ -95,6 +95,7 @@
 <body>
 @if(!empty($results))
     <div class="Report_Date">
+        <h4> الجهه :  {{ $results[0]->geha->geha }}</h4>
         <p> تاريخ التقرير : <?php echo date('d-m-Y'); ?></p>
     </div>
     <table class="table table-bordered table-striped">

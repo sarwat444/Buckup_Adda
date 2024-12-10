@@ -132,7 +132,6 @@
                     <td class="text-primary">{{ $result->mokasher->program->program }}</td>
                     <td class="text-primary">{{ $result->mokasher->program->goal->objective->objective }}</td>
                     <td>{{ $result->mokasher->name }}</td>
-                    <td>{{ $result->geha->geha }}</td>
                     <td>{{ $result->mostahdf }}</td>
                     <td>{{ $result->rating }}</td>
                     <td>

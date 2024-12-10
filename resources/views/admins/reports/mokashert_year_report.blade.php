@@ -108,7 +108,7 @@
                                            $performance = 0  ;
                                         }else
                                         {
-                                            $performance = ($result->rating/$result->mostahdf)*100 ;
+                                            $performance = ($result->rating / $result->mostahdf )*100 ;
                                          }
 
                                     @endphp
@@ -130,7 +130,7 @@
                                             @elseif($performance  ==  100)
                                                 <span class="performance" style="background-color: #00ff00 ">{{round($performance)}} %</span>
                                                 @else
-                                                <span class="performance" style="background-color: #f00 ">0 %</span>
+                                                <span class="performance" style="background-color: #f00 ">{{round($performance)}} %</span>
                                             @endif
                                         </td>
                                         <td>

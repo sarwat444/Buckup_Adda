@@ -89,7 +89,6 @@
                                 <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>الغاية</th>
                                     <th>الهدف</th>
                                     <th>البرنامج</th>
                                     <th>المؤشر</th>
@@ -103,24 +102,22 @@
                                 <tbody>
                                 @foreach($results as $result)
                                     @php
-                                        // Check for division by zero and calculate performance
-                                        if ($result->mostahdf == 0) {
-                                            $performance = 0; // No target, no performance
+                                        if ($result->mostahdf == 0 && $result->rating > 0) {
+                                            $performance = 100;
+                                        } elseif ($result->mostahdf == 0) {
+                                            $performance = 0;
                                         } else {
                                             $performance = ($result->rating / $result->mostahdf) * 100;
-                                            // Cap performance to 100% if it exceeds
                                             if ($performance > 100) {
                                                 $performance = 100;
                                             }
                                         }
                                     @endphp
-
                                     @if($result->mokasher->addedBy == 0)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
                                             <td class="text-primary">{{ $result->mokasher->program->program }}</td>
-                                            <td class="text-primary">{{ $result->mokasher->program->goal->objective->objective }}</td>
                                             <td>{{ $result->mokasher->name }}</td>
                                             <td>{{ $result->geha->geha }}</td>
                                             <td>{{ $result->mostahdf }}</td>

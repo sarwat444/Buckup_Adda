@@ -113,12 +113,12 @@
         <tbody>
         @foreach($results as $result)
             @php
-                // Check for division by zero and calculate performance
-                if ($result->mostahdf == 0) {
-                    $performance = 0; // No target, no performance
+                if ($result->mostahdf == 0 && $result->rating > 0) {
+                    $performance = 100;
+                } elseif ($result->mostahdf == 0) {
+                    $performance = 0;
                 } else {
                     $performance = ($result->rating / $result->mostahdf) * 100;
-                    // Cap performance to 100% if it exceeds
                     if ($performance > 100) {
                         $performance = 100;
                     }

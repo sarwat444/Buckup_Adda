@@ -229,5 +229,27 @@ class MokasherController extends Controller
         $pdfService = new PDFService();
         $pdfService->generateMokasherYearsPDF2($data, 'mokashert_years.pdf');
     }
+    public function print_users_years2($geha, $year_id , $kehta_id)
+    {
+        $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => $kehta_id])->get();
+        $kheta = Kheta::where('id' ,  $kehta_id)->first() ;
+
+        $results = MokasherGehaInput::with('mokasher', 'geha' , 'mokasher.program' , 'mokasher.program.goal' , 'mokasher.program.goal.objective')
+            ->where(['geha_id' => $geha, 'year_id' =>$year_id])
+            ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+            ->get();
+        $data = [
+            'results' => $results,
+            'gehat' => $gehat,
+            'kheta_name' => $kheta->name,
+            'kehta_image' =>  $kheta->image ,
+            'report_name' => 'تقرير جهات  السنوى ' ,
+            'selected_geha' => $geha,
+        ];
+
+        // Generate PDF using TCPDF
+        $pdfService = new PDFService();
+        $pdfService->generateMokasherYearsPDF3($data, 'mokashert_years.pdf');
+    }
 
 }

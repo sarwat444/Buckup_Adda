@@ -289,7 +289,38 @@ class PDFService extends TCPDF
         $pdf->Output($fileName, 'I');
     }
 
+    public function generateMokasherYearsPDF3($data, $fileName)
+    {
+        // Create new PDF instance
+        $pdf = new PDFService();
+        $pdf->setRTL(true); // Set RTL direction
+        $pdf->AddPage();
 
+        // Set the value of $this->name to $data['kheta_name']
+
+        $pdf->name = $data['kheta_name'];
+
+        $pdf->kheta_image = $data['kehta_image'];
+
+        $pdf->report_name = $data['report_name'];
+
+
+        // Set header and footer
+        $pdf->Header($data); // Pass $data['kheta_name'] directly to setPrintHeader
+        $pdf->setPrintFooter(true);
+
+        // Set header and footer data
+        $pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
+
+        // Set font with UTF-8 encoding for Arabic text
+        $pdf->SetFont('aealarabiya', '', 12); // Set font family and size, with empty string for style (regular)
+        // Add content to PDF
+        $html = view('admins.reports.print-report.mokasher_years_report2', $data)->render();
+        $pdf->writeHTML($html, true, false, false, false, '');
+
+        // Output PDF to browser for preview
+        $pdf->Output($fileName, 'I');
+    }
 
 
    public  function generateGehtMokasheratYearsPDF($data, $fileName)

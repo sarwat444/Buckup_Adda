@@ -182,6 +182,7 @@ Route::group(['prefix' => 'admins/dashboard', 'middleware' => 'auth:admin', 'as'
     Route::get('print_users_part/{geha}/{part}/{kehta_id}', [MokasherController::class , 'print_users_part'])->name('print_users_part');
 
     Route::get('print_users_years/{geha}/{year_id}/{kehta_id}', [MokasherController::class , 'print_users_years'])->name('print_users_years');
+    Route::get('print_users_years2/{geha}/{year_id}/{kehta_id}', [MokasherController::class , 'print_users_years2'])->name('print_users_years2');
 
 
 

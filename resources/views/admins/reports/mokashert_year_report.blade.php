@@ -83,7 +83,9 @@
             <div class="card">
                 <div class="card-body">
                     @if(!empty($results))
-                        <a class="btn btn-primary mb-2" onclick="printReport('{{$selected_geha }}', '{{ $year_id }}' , '{{$kehta_id}}')"> <i class="bx bx-printer"></i> طباعه التقرير </a>
+                        <a class="btn btn-primary mb-2" onclick="printReport('{{$selected_geha }}', '{{ $year_id }}' , '{{$kehta_id}}')"> <i class="bx bx-printer"></i> طباعه مؤشرات الأدارة </a>
+                        <a class="btn btn-primary mb-2" onclick="printReport2('{{$selected_geha }}', '{{ $year_id }}' , '{{$kehta_id}}')"> <i class="bx bx-printer"></i> طباعه المؤشرات الكلية </a>
+
                         <div class="table-responsive">
                             <table id="datatable" class="table table-bordered table-striped">
                                 <thead>
@@ -186,4 +188,19 @@
               .replace(':kehta_id', kehta_id);
         }
     </script>
+
+    <script>
+        function printReport2(geha, year_id , kehta_id) {
+            window.location.href = '{{ route('dashboard.print_users_years2', ['geha' => ':geha', 'year_id' => ':year_id' , 'kehta_id' => ':kehta_id']) }}'
+                .replace(':geha', geha)
+                .replace(':year_id', year_id)
+                .replace(':kehta_id', kehta_id);
+        }
+    </script>
+
+
+
+
+
+
 @endpush

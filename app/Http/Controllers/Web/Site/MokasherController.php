@@ -168,6 +168,22 @@ class MokasherController extends Controller
             'mokasher_id' => 'required',
             'sub_geha_id' => 'required',
         ]);
+        if(empty($request->part_1))
+        {
+            $request->part_1 = 0 ; 
+        }
+        if(empty($request->part_2))
+        {
+            $request->part_2 = 0 ; 
+        }
+        if(empty($request->part_3))
+        {
+            $request->part_3 = 0 ; 
+        }
+        if(empty($request->part_4))
+        {
+            $request->part_4 = 0 ; 
+        }
 
         if ($validate->fails()) {
             return redirect()->back()->with('error', 'يوجد خطا  ما  ');

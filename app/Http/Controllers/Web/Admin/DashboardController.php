@@ -272,11 +272,6 @@ class DashboardController extends Controller
         return view('admins.reports.mokasherat_wezara' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
     }
 
-
-
-
-
-
     public function print_gehat_mokasherat ($kheta_id , $year_id)
     {
         $kheta = Kheta::where('id' , $kheta_id )->first() ;
@@ -415,28 +410,40 @@ class DashboardController extends Controller
 
     }
 
-    public function print_mokasherat_wezara($kheta_id , $year_id)
+    public function print_mokasherat_wezara($kheta_id, $year_id)
     {
-        $kheta = Kheta::where('id' , $kheta_id )->first() ;
-        $years  = Execution_year::where('kheta_id', $kheta_id)->get();
-        $gehat = User::where('kehta_id', $kheta_id)->get() ;
-        $results = MokasherGehaInput::select('geha_id')
-            ->where('year_id', $year_id)
-            ->groupBy('geha_id')
-            ->get();
+        $years = Execution_year::where('kheta_id', $kheta_id)->get();
+        $gehat = User::where('kehta_id', $kheta_id)->get();
 
+        if (!empty($year_id)) {
+            $results = MokasherGehaInput::with('mokasher', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
+                ->where('year_id', $year_id)
+                ->get()
+                ->groupBy('mokasher_id')
+                ->map(function ($group) {
+                    $mokasher = $group->first()->mokasher;
+                    $types = json_decode($mokasher->type, true);
 
-        $data = [
-            'results' => $results,
-            'gehat' => $gehat,
-            'years' => $years,
-            'kheta_name' =>$kheta->name ,
-            'kehta_image' =>  $kheta->image ,
-            'report_name' => 'تقرير متابعه  مؤشرات الوزاره '
-        ];
-        // Generate PDF using TCPDF
-        $pdfService = new PDFService();
-        $pdfService->generateMokasheratWezaraPDF($data, 'Mokasherat_wezara.pdf');
+                    if (!$types || !in_array(0, $types)) {
+                        return null;
+                    }
+
+                    $total_parts = $group->sum('part_1') + $group->sum('part_2') + $group->sum('part_3') + $group->sum('part_4');
+                    $total_rates = $group->sum('rate_part_1') + $group->sum('rate_part_2') + $group->sum('rate_part_3') + $group->sum('rate_part_4');
+                    $performance = $total_parts > 0 ? ($total_rates / $total_parts) * 100 : 0;
+
+                    return [
+                        'name' => $mokasher->name,
+                        'performance' => round($performance),
+                        'program' => $mokasher->program->program ?? 'N/A',
+                        'goal' => $mokasher->program->goal->goal ?? 'N/A',
+                        'objective' => $mokasher->program->goal->objective->objective ?? 'N/A',
+                    ];
+                })
+                ->filter()
+                ->values();
+            return view('admins.new_reports.mokasers_wezara', compact('results', 'years', 'year_id', 'kheta_id', 'gehat'));
+        }
     }
 
 

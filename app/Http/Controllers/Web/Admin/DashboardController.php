@@ -141,38 +141,17 @@ class DashboardController extends Controller
     public  function print_mokasherat_gehat_report($kheta_id , $year_id = null , $part = null )
     {
         $years  = Execution_year::where('kheta_id', $kheta_id)->get();
-        $kheta = Kheta::find($kheta_id);
-
-        if ($kheta) {
-            $kheta_name = $kheta->name;
-        } else {
-            // Handle the case where no Kheta record is found for the given ID
-            $kheta_name = ''; // or any default value
-        }
-
         $gehat = User::where('kehta_id', $kheta_id)->get() ;
         if (!empty($year_id)) {
+
             $results = MokasherGehaInput::select('mokasher_id')
                 ->where('year_id', $year_id)
                 ->groupBy('mokasher_id')
                 ->with('mokasher')
                 ->get();
-            $data = [
-                'results' => $results ,
-                'years' => $years ,
-                'year_id' => $year_id ,
-                'kheta_id' => $kheta_id ,
-                'gehat' => $gehat ,
-                'part' => $part ,
-                'kheta_name' => $kheta_name ,
-                'kehta_image' =>  $kheta->image ,
-                'report_name' => 'تقرير أنجاز الجهات'
-            ];
-            // Generate PDF using TCPDF
-            $pdfService = new PDFService();
-            $pdfService->generate_mokasherat_gehatPDF($data, 'Mokasher_gehat.pdf');
+            return  view('admins.new_reports.year_mokaser_report'  ,  compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part')) ;
         }
-
+        return  view('admins.new_reports.year_mokaser_report'  ,  compact('years' ,'kheta_id' ,'year_id','gehat' ,'part')) ;
     }
 
     /** Final Report  */
@@ -195,15 +174,6 @@ class DashboardController extends Controller
     public  function print_gehat_targets_report($kheta_id , $year_id = null , $part = null )
     {
         $years  = Execution_year::where('kheta_id', $kheta_id)->get();
-        $kheta = Kheta::find($kheta_id);
-
-        if ($kheta) {
-            $kheta_name = $kheta->name;
-        } else {
-            // Handle the case where no Kheta record is found for the given ID
-            $kheta_name = ''; // or any default value
-        }
-
         $gehat = User::where('kehta_id', $kheta_id)->get() ;
         if (!empty($year_id)) {
             $results = MokasherGehaInput::select('mokasher_id')
@@ -211,23 +181,9 @@ class DashboardController extends Controller
                 ->groupBy('mokasher_id')
                 ->with('mokasher')
                 ->get();
-            $data = [
-                'results' => $results ,
-                'years' => $years ,
-                'year_id' => $year_id ,
-                'kheta_id' => $kheta_id ,
-                'gehat' => $gehat ,
-                'part' => $part ,
-                'kheta_name' => $kheta_name ,
-                'kehta_image' =>  $kheta->image ,
-                'report_name' => 'تقرير مستهدف الجهات'
-            ];
-            // Generate PDF using TCPDF
-            $pdfService = new PDFService();
-            $pdfService->generate_target_mokasherat_gehatPDF($data, 'Mokasher_target_gehat.pdf');
+            return view('admins.new_reports.gehat_target' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part'));
         }
-
-
+        return view('admins.new_reports.gehat_target' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
     }
 
 
@@ -259,40 +215,53 @@ class DashboardController extends Controller
   }
     public function mokasherat_wezara($kheta_id , $year_id = null , $part = null )
     {
+        $years = Execution_year::where('kheta_id', $kheta_id)->get();
+        $gehat = User::where('kehta_id', $kheta_id)->get();
+
+
+            $results = MokasherGehaInput::with('mokasher', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
+                ->where('year_id', $year_id)
+                ->get()
+                ->groupBy('mokasher_id')
+                ->map(function ($group) {
+                    $mokasher = $group->first()->mokasher;
+                    $types = json_decode($mokasher->type, true);
+
+                    if (!$types || !in_array(0, $types)) {
+                        return null;
+                    }
+
+                    $total_parts = $group->sum('part_1') + $group->sum('part_2') + $group->sum('part_3') + $group->sum('part_4');
+                    $total_rates = $group->sum('rate_part_1') + $group->sum('rate_part_2') + $group->sum('rate_part_3') + $group->sum('rate_part_4');
+                    $performance = $total_parts > 0 ? ($total_rates / $total_parts) * 100 : 0;
+
+                    return [
+                        'name' => $mokasher->name,
+                        'performance' => round($performance),
+                        'program' => $mokasher->program->program ?? 'N/A',
+                        'goal' => $mokasher->program->goal->goal ?? 'N/A',
+                        'objective' => $mokasher->program->goal->objective->objective ?? 'N/A',
+                    ];
+                })
+                ->filter()
+                ->values();
+            return view('admins.reports.mokasherat_wezara', compact('results', 'years', 'year_id', 'kheta_id', 'gehat'));
+
+    }
+
+    public function print_gehat_mokasherat ($kheta_id , $year_id = null , $part = null)
+    {
         $years  = Execution_year::where('kheta_id', $kheta_id)->get();
         $gehat = User::where('kehta_id', $kheta_id)->get() ;
-
         if (!empty($year_id)) {
+
             $results = MokasherGehaInput::select('geha_id')
                 ->where('year_id', $year_id)
                 ->groupBy('geha_id')
                 ->get();
-            return view('admins.reports.mokasherat_wezara' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part'));
+            return view('admins.new_reports.uploaded_files_report' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part'));
         }
-        return view('admins.reports.mokasherat_wezara' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
-    }
-
-    public function print_gehat_mokasherat ($kheta_id , $year_id)
-    {
-        $kheta = Kheta::where('id' , $kheta_id )->first() ;
-        $years  = Execution_year::where('kheta_id', $kheta_id)->get();
-        $gehat = User::where('kehta_id', $kheta_id)->get() ;
-        $results = MokasherGehaInput::select('geha_id')
-            ->where('year_id', $year_id)
-            ->groupBy('geha_id')
-            ->get();
-    
-        $data = [
-            'results' => $results,
-            'gehat' => $gehat,
-            'years' => $years,
-            'kheta_name' =>$kheta->name ,
-            'report_name' => 'تقرير متابعه  الجهات'
-        ];
-
-        // Generate PDF using TCPDF
-        $pdfService = new PDFService();
-        $pdfService->generateGehtMokasheratYearsPDF($data, 'GehtMokasheratYears.pdf');
+        return view('admins.new_reports.uploaded_files_report' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
 
     }
 

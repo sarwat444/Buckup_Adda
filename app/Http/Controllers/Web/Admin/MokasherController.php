@@ -136,6 +136,9 @@ class MokasherController extends Controller
         }
     }
 
+
+
+
     public function get_users_reports_year(Request $request , $kehta_id )
     {
         $geha = $request->geha;
@@ -216,18 +219,7 @@ class MokasherController extends Controller
             ->where(['geha_id' => $geha, 'year_id' =>$year_id])
             ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
             ->get();
-        $data = [
-            'results' => $results,
-            'gehat' => $gehat,
-            'kheta_name' => $kheta->name,
-            'kehta_image' =>  $kheta->image ,
-            'report_name' => 'تقرير جهات  السنوى ' ,
-            'selected_geha' => $geha,
-        ];
-
-        // Generate PDF using TCPDF
-        $pdfService = new PDFService();
-        $pdfService->generateMokasherYearsPDF2($data, 'mokashert_years.pdf');
+          return  view('admins.new_reports.users_years' , compact('results') );
     }
     public function print_users_years2($geha, $year_id , $kehta_id)
     {

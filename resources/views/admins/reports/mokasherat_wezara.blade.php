@@ -73,113 +73,40 @@
                             <i class="bx bx-printer"></i> طباعه التقرير
                         </a>
                         <div class="table-responsive">
-                            <table id="datatable" class="table table-bordered table-striped">
+                            <table  class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-
-                                    <th>الجهات المنفذه</th>
+                                    <th> الغاية</th>
+                                    <th>الهدف</th>
+                                    <th>البرنامج</th>
                                     <th>المؤشر</th>
+                                    <th>الأداء</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @forelse($results as $result)
-                                    @php
-                                        $geha_execution = \App\Models\MokasherGehaInput::with('mokasher', 'geha')
-                                            ->withCount('mokasher')
-                                            ->where('geha_id', $result->geha_id)
-                                            ->get();
-                                    @endphp
-
-                                    @php
-                                        // Fetch the indicator types for the first execution entity
-                                        $types = json_decode(optional($geha_execution->first())->mokasher->type);
-                                    @endphp
-
-                                    @if($types && in_array(0, $types))
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ optional($geha_execution->first())->geha->geha }}</td>
-                                            <td>
-                                                <table class="table table-bordered">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>اسم المؤشر</th>
-                                                        <th>الأداء</th>
-                                                        <th>م.الربع الأول</th>
-                                                        <th>م.الربع الثانى</th>
-                                                        <th>م.الربع الثالث</th>
-                                                        <th>م.الربع الرابع</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    @foreach($geha_execution as $geha)
-                                                        @if($geha->addedBy == 0 )
-                                                        @php
-                                                            $total_parts = $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4;
-                                                            $performance = $total_parts > 0
-                                                                ? (($geha->rate_part_1 + $geha->rate_part_2 + $geha->rate_part_3 + $geha->rate_part_4) / $total_parts) * 100
-                                                                : 0;
-                                                        @endphp
-
-                                                        <tr>
-                                                            <td>{{ $geha->mokasher->name }}</td>
-                                                            <td>
-                                                                @if($performance < 50)
-                                                                    <span class="performance" style="background-color: #f00;">
-                                                            {{ round($performance) }} %
-                                                        </span>
-                                                                @elseif($performance >= 50 && $performance < 100)
-                                                                    <span class="performance" style="background-color: #f8de26;">
-                                                            {{ round($performance) }} %
-                                                        </span>
-                                                                @elseif($performance == 100)
-                                                                    <span class="performance" style="background-color: #00ff00;">
-                                                            {{ round($performance) }} %
-                                                        </span>
-                                                                @endif
-                                                            </td>
-                                                            <td style="width: 100px ;">
-                                                                @if(!empty($geha->note_part_1))
-                                                                    {{ $geha->note_part_1 }}
-                                                                @else
-                                                                    <span class="badge badge-soft-danger">لا يوجد</span>
-                                                                @endif
-                                                            </td>
-                                                            <td style="width: 100px ;">
-                                                                @if(!empty($geha->note_part_2))
-                                                                    {{ $geha->note_part_2 }}
-                                                                @else
-                                                                    <span class="badge badge-soft-danger">لا يوجد</span>
-                                                                @endif
-                                                            </td>
-                                                            <td style="width: 100px ;">
-                                                                @if(!empty($geha->note_part_3))
-                                                                    {{ $geha->note_part_3 }}
-                                                                @else
-                                                                    <span class="badge badge-soft-danger">لا يوجد</span>
-                                                                @endif
-                                                            </td>
-                                                            <td style="width: 100px ;">
-                                                                @if(!empty($geha->note_part_4))
-                                                                    {{ $geha->note_part_4 }}
-                                                                @else
-                                                                    <span class="badge badge-soft-danger">لا يوجد</span>
-                                                                @endif
-                                                            </td>
-
-                                                        </tr>
-                                                        @endif
-                                                    @endforeach
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @empty
+                                @foreach($results as $result)
                                     <tr>
-                                        <td colspan="7" class="text-center">No data available</td>
+                                        <td>{{ $result['objective'] }}</td>
+                                        <td>{{ $result['goal'] }}</td>
+                                        <td>{{ $result['program'] }}</td>
+                                        <td>{{ $result['name'] }}</td>
+                                        <td style="width: 85px">
+                                            @if($result['performance'] < 50)
+                                                <span class="performance" style="background-color: #f00;">
+            {{ $result['performance'] }} %
+        </span>
+                                            @elseif($result['performance'] >= 50 && $result['performance'] < 90)
+                                                <span class="performance" style="background-color: #f8de26;">
+            {{ $result['performance'] }} %
+        </span>
+                                            @elseif($result['performance'] >= 90 && $result['performance'] <= 100)
+                                                <span class="performance" style="background-color: #00ff00;">
+            {{ $result['performance'] }} %
+        </span>
+                                            @endif
+                                        </td>
                                     </tr>
-                                @endforelse
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>

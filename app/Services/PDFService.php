@@ -345,6 +345,10 @@ class PDFService extends TCPDF
        // Output PDF to browser for preview
        $pdf->Output($fileName, 'I');
    }
+
+
+
+
    public  function generateActiveUsersPDF($data, $fileName)
    {
        // Create new PDF instance

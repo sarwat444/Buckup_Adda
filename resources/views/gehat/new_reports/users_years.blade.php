@@ -127,8 +127,14 @@
                 width: 100%;
                 margin: 0 auto;
             }
-            table{
-                width: 100%;
+            table {
+                width: 100% !important;
+            }
+            .tt_table
+            {
+                width: 100% !important;
+                table-layout: fixed; /* Ensure the table is properly structured */
+                border-collapse: collapse; /* Ensure borders collapse neatly */
             }
         }
     </style>
@@ -136,7 +142,7 @@
 <body>
 <div class="container">
     <button class="btn btn-primary mb-2" id="print_report">
-        <i class="bx bx-printer download_pdf" id=""></i> طباعه التقرير
+        <i class="bx bx-printer download_pdf"></i> طباعه التقرير
     </button>
     <div class="row top-header">
         <div class="col-md-3 box-1">
@@ -144,7 +150,8 @@
         </div>
         <div class="col-md-5 box-2">
             <h1>نظام أداء جامعة بنها </h1>
-            <h3> تقرير مستهدف الجهات - عام {{ $year->year_name }} </h3>
+            <h3> تقرير السنوى  للجهات - عام 2024   </h3>
+            <h6>{{$geha_name->geha}}</h6>
             <p><?php echo date('d-m-Y'); ?></p>
         </div>
         <div class="col-md-4">
@@ -178,70 +185,80 @@
     </div>
     <div class="card">
         @if(!empty($results))
-            <div class="table-responsive">
                 <table id="datatable" class="table table-bordered table-striped">
                     <thead>
                     <tr>
-                        <th>#</th>
+                        <th>الغاية</th>
+                        <th>الهدف</th>
+                        <th>البرنامج</th>
                         <th>المؤشر</th>
-                        <th style="width: 387px;">الجهه</th>
-                        <th style="width: 100px">المستهدف</th>
-                        <th style="width: 100px">الربع الأول</th>
-                        <th style="width: 100px">الربع الثانى</th>
-                        <th style="width: 100px">الربع الثالث</th>
-                        <th style="width: 100px">الربع الرابع</th>
-                        <th style="width: 100px">اجمالى المنجز</th>
+                        <th>المستهدف</th>
+                        <th>المنجز</th>
+                        <th>الأداء</th>
+                        <th>ملاحظات</th>
                     </tr>
                     </thead>
                     <tbody>
+                    @php
+                        $i = 1;
+                    @endphp
+
                     @forelse($results as $result)
                         @php
-                            $indicatorName = $result->mokasher->name;
+                            // Calculate the performance
+                            if ($result->mostahdf == 0) {
+                                $performance = 0;
+                            } else {
+                                $performance = ($result->rating / $result->mostahdf) * 100;
+                            }
                         @endphp
-                        {{-- شرط إظهار الصفوف التي تحتوي على الكلمة "عدد" فقط --}}
-                        @if($result->mokasher->addedBy == 0 && strpos($indicatorName, 'عدد') !== false)
-                            @php
-                                $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id', $result->mokasher_id)->get();
-                                $mokasher_total = 0; // إجمالي المؤشر لهذا الـ mokasher
-                            @endphp
+
+                        @if($result->mokasher->addedBy == 0)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td style="width: 387px;">{{ $indicatorName }}</td>
-                                <td colspan="8">
-                                    <table class="table table-bordered mb-0">
-                                        <tbody>
-                                        @foreach($geha_execution as $geha)
-                                            @php
-                                                $total = $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4;
-                                                $mokasher_total += $total; // جمع القيم لحساب الإجمالي
-                                            @endphp
-                                            <tr>
-                                                <td style="width: 387px;">{{ $geha->geha->geha }}</td>
-                                                <td style="width: 100px">{{ $geha->target }}</td>
-                                                <td style="width: 100px">{{ $geha->part_1 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_2 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_3 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_4 }}</td>
-                                                <td style="width: 100px">{{ $total }}</td>
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
+                                <td>{{ $result->mokasher->program->goal->objective->objective }}</td>
+                                <td>{{ $result->mokasher->program->goal->goal }}</td>
+                                <td>{{ $result->mokasher->program->program }}</td>
+                                <td>{{ $result->mokasher->name }}</td>
+                                <td>{{ $result->mostahdf }}</td>
+                                <td>{{ $result->rating }}</td>
+                                <td>
+                                    @if($performance < 50)
+                                        <span class="performance" style="background-color: #f00">{{ $performance }} %</span>
+                                    @elseif($performance >= 50 && $performance < 100)
+                                        <span class="performance" style="background-color: #f8de26">{{ $performance }} %</span>
+                                    @elseif($performance == 100)
+                                        <span class="performance" style="background-color: #00ff00">{{ $performance }} %</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(!empty($result->note_part_1))
+                                        {{$result->note_part_1}}
+                                    @elseif(!empty($result->note_part_2))
+                                        {{$result->note_part_2}}
+                                    @elseif(!empty($result->note_part_3))
+                                        {{$result->note_part_3}}
+                                    @elseif(!empty($result->note_part_4))
+                                        {{$result->note_part_4}}
+                                    @else
+                                        <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
+                                    @endif
                                 </td>
                             </tr>
+                            @php
+                                $i++;  // Increment the index after the row is displayed
+                            @endphp
                         @endif
                     @empty
                         <tr>
                             <td colspan="8" class="text-center">No data available</td>
                         </tr>
                     @endforelse
+
                     </tbody>
                 </table>
-            </div>
         @else
-            <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه المطلوبه</span>
+            <span class="badge badge-soft-danger font-size-13">برجاء أختيار الجهه المطلوبه</span>
         @endif
-
     </div>
 </div>
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/jquery/jquery.min.js')}}"></script>
@@ -250,8 +267,11 @@
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/simplebar/simplebar.min.js')}}"></script>
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/node-waves/waves.min.js')}}"></script>
 <script>
-    document.getElementById('print_report').addEventListener('click', function () {
-        window.print();
+    // Wait for the DOM to fully load
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('print_report').addEventListener('click', function () {
+            window.print();
+        });
     });
 </script>
 </body>

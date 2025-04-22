@@ -19,6 +19,11 @@
             direction: rtl;
             text-align: right;
         }
+        .s_logo
+        {
+            width: 100%;
+            height: 163px;
+        }
         #print_report
         {
             width: 100%;
@@ -74,11 +79,6 @@
             color: #fff;
             padding: 5px;
             border-radius: 4px;
-        }
-        .s_logo
-        {
-            width: 100%;
-            height: 163px;
         }
         @media print {
             #print_report
@@ -144,7 +144,7 @@
         </div>
         <div class="col-md-5 box-2">
             <h1>نظام أداء جامعة بنها </h1>
-            <h3> تقرير مستهدف الجهات - عام {{ $year->year_name }} </h3>
+            <h3> تقرير متابعة  الغايات - 2024 </h3>
             <p><?php echo date('d-m-Y'); ?></p>
         </div>
         <div class="col-md-4">
@@ -177,71 +177,74 @@
         </div>
     </div>
     <div class="card">
-        @if(!empty($results))
+        <div class="card-body">
             <div class="table-responsive">
-                <table id="datatable" class="table table-bordered table-striped">
+                <table class="table table-bordered">
                     <thead>
                     <tr>
-                        <th>#</th>
-                        <th>المؤشر</th>
-                        <th style="width: 387px;">الجهه</th>
-                        <th style="width: 100px">المستهدف</th>
-                        <th style="width: 100px">الربع الأول</th>
-                        <th style="width: 100px">الربع الثانى</th>
-                        <th style="width: 100px">الربع الثالث</th>
-                        <th style="width: 100px">الربع الرابع</th>
-                        <th style="width: 100px">اجمالى المنجز</th>
+                        <th>الغاية</th>
+                        <th>الأداء (%)</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @forelse($results as $result)
-                        @php
-                            $indicatorName = $result->mokasher->name;
-                        @endphp
-                        {{-- شرط إظهار الصفوف التي تحتوي على الكلمة "عدد" فقط --}}
-                        @if($result->mokasher->addedBy == 0 && strpos($indicatorName, 'عدد') !== false)
+                    @if(!empty($objectives))
+                        @foreach ($objectives as $ob_key => $objective)
                             @php
-                                $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id', $result->mokasher_id)->get();
-                                $mokasher_total = 0; // إجمالي المؤشر لهذا الـ mokasher
+                                $goals_count = $objective->goals_count;
+                                $total = 0;
+                                $ob_mokasher = [];
+                                $programs_count = [];
                             @endphp
+                            @if(!empty($objective->goals))
+                                @foreach ($objective->goals as $key => $goal)
+                                    @php
+                                        $programs_count = $goal->programs->count();
+                                        if (!empty($goal->programs)) {
+                                            foreach ($goal->programs as $program) {
+                                                if (!empty($program->moksherat)) {
+                                                    $ob_mokasher[] = $program->moksherat->count();
+                                                    foreach ($program->moksherat as $mokasher) {
+                                                        if (!empty($mokasher->mokasher_geha_inputs)) {
+                                                            $total += $mokasher->mokasher_geha_inputs->percentage;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                @endforeach
+                            @endif
+
+                            @php
+                                // Calculate performance
+                                $performance = 0;
+                                if (!empty($goals_count) && $goals_count > 0 && !empty($programs_count) && $programs_count > 0 && !empty($ob_mokasher[$ob_key]) && $ob_mokasher[$ob_key] > 0) {
+                                    $performance = round((($total / $ob_mokasher[$ob_key]) / $programs_count) / $goals_count);
+                                    $performance = $performance > 100 ? 5 : $performance; // Adjust if >100
+                                }
+
+                                // Determine background color
+                                $color = '#f00'; // Default: Red (ضعيف)
+                                if ($performance >= 50 && $performance < 90) {
+                                    $color = '#f8de26'; // Yellow (متوسط)
+                                } elseif ($performance >= 90) {
+                                    $color = '#00ff00'; // Green (ممتاز)
+                                }
+                            @endphp
+
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td style="width: 387px;">{{ $indicatorName }}</td>
-                                <td colspan="8">
-                                    <table class="table table-bordered mb-0">
-                                        <tbody>
-                                        @foreach($geha_execution as $geha)
-                                            @php
-                                                $total = $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4;
-                                                $mokasher_total += $total; // جمع القيم لحساب الإجمالي
-                                            @endphp
-                                            <tr>
-                                                <td style="width: 387px;">{{ $geha->geha->geha }}</td>
-                                                <td style="width: 100px">{{ $geha->target }}</td>
-                                                <td style="width: 100px">{{ $geha->part_1 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_2 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_3 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_4 }}</td>
-                                                <td style="width: 100px">{{ $total }}</td>
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
+                                <td>{{ $objective->objective }}</td>
+                                <td style="background-color: {{ $color }}; color: #fff; font-weight: bold; text-align: center;">
+                                    {{ $performance }}%
                                 </td>
                             </tr>
-                        @endif
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center">No data available</td>
-                        </tr>
-                    @endforelse
+                        @endforeach
+                    @endif
                     </tbody>
                 </table>
-            </div>
-        @else
-            <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه المطلوبه</span>
-        @endif
 
+            </div>
+        </div>
     </div>
 </div>
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/jquery/jquery.min.js')}}"></script>

@@ -144,7 +144,7 @@
         </div>
         <div class="col-md-5 box-2">
             <h1>نظام أداء جامعة بنها </h1>
-            <h3> تقرير متابعة الجهات - عام {{ $year->year_name }} </h3>
+            <h3> تقريراجمالى مؤشرات  الجامعه  - عام {{ $year->year_name }} </h3>
             <p><?php echo date('d-m-Y'); ?></p>
         </div>
         <div class="col-md-4">
@@ -184,114 +184,49 @@
                     <tr>
                         <th>#</th>
                         <th>المؤشر</th>
-                        <th>الجهات المنفذه</th>
+                        <th>اجمالى المؤشر</th>
                     </tr>
                     </thead>
                     <tbody>
+                    @php $counter = 1; @endphp
                     @forelse($results as $result)
-                        @if(!empty($part))
+                        @php
+                            $indicatorName = $result->mokasher->name;
+                        @endphp
+                        {{-- شرط إظهار الصفوف التي تحتوي على الكلمة "عدد" فقط --}}
+                        @if($result->mokasher->addedBy == 0 && strpos($indicatorName, 'عدد') !== false)
                             @php
-                                $geha_execution = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id' , $result->mokasher_id)->get();
-
+                                $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id', $result->mokasher_id)->get();
+                                $mokasher_total = 0; // إجمالي المؤشر لهذا الـ mokasher
                             @endphp
-
-                            @if($result->mokasher->addedBy == 0 )
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $result->mokasher->name }}</td>
-
-                                    <td>
-                                        <table class="table table-bordered table-responsive">
-                                            @foreach($geha_execution as $geha)
-                                                <tr>
-                                                    @php
-                                                        if($geha->{"part_".$part} > 0 )
-                                                         {
-                                                             $performance = ($geha->{"rate_part_".$part}) / ($geha->{"part_".$part}) * 100;
-                                                         }else{
-                                                            $performance = 0 ;
-                                                         }
-                                                    @endphp
-                                                    <td>{{ $geha->geha->geha }}</td>
-                                                    <td>{{ $geha->target }}</td>
-                                                    <td style="width: 100px">
-                                                        @if($performance < 50)
-                                                            <span class="performance"
-                                                                  style="background-color: #f00">{{ round($performance) }} %</span>
-                                                        @elseif($performance >= 50 && $performance < 100)
-                                                            <span class="performance"
-                                                                  style="background-color: #f8de26">{{ round($performance) }} %</span>
-                                                        @elseif($performance == 100)
-                                                            <span class="performance"
-                                                                  style="background-color: #00ff00">{{ round($performance) }} %</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </table>
-                                    </td>
-                                </tr>
-                            @endif
-
-                        @else
-                            @php
-                                $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id' , $result->mokasher_id)->get();
-                            @endphp
-                            @if($result->mokasher->addedBy == 0 )
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $result->mokasher->name }}</td>
-                                    <td>
-                                        <table class="table table-bordered table-responsive">
-
-                                            @foreach($geha_execution as $geha)
-                                                <tr>
-                                                    @php
-                                                        $total_rating =  $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4 ;
-                                                        if($total_rating > 0 )
-                                                        {
-                                                           $performance = ($geha->rate_part_1 + $geha->rate_part_2 + $geha->rate_part_3 + $geha->rate_part_4) / ($geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4) * 100;
-                                                        }else
-                                                         {
-                                                            $performance = 0 ;
-                                                         }
-
-                                                    @endphp
-
-                                                    <td>{{ $geha->geha->geha }} </td>
-                                                    <td>{{ $geha->target }} </td>
-                                                    <td style="width: 100px">
-                                                        @if($performance < 50 )
-                                                            <span class="performance"
-                                                                  style="background-color: #f00 ">{{round($performance)}} %</span>
-                                                        @elseif($performance  >=  50 && $performance < 100 )
-                                                            <span class="performance"
-                                                                  style="background-color: #f8de26 ">{{round($performance)}} %</span>
-                                                        @elseif($performance  ==  100)
-                                                            <span class="performance"
-                                                                  style="background-color: #00ff00 ">{{round($performance)}} %</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-
-                                        </table>
-                                    </td>
-                                </tr>
-                            @endif
+                            <tr>
+                                <td>{{ $counter }}</td> {{-- Use the manual counter --}}
+                                <td>{{ $indicatorName }}</td>
+                                <td>
+                                    @foreach($geha_execution as $geha)
+                                        @php
+                                            $total = $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4;
+                                            $mokasher_total += $total; // جمع القيم لحساب الإجمالي
+                                        @endphp
+                                    @endforeach
+                                    {{ $mokasher_total }}
+                                </td>
+                            </tr>
+                            @php $counter++; @endphp {{-- Increment counter only for displayed rows --}}
                         @endif
-
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center">No data available</td>
+                            <td colspan="3" class="text-center">No data available</td>
                         </tr>
                     @endforelse
                     </tbody>
                 </table>
             </div>
         @else
-            <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه  المطلوبه</span>
+            <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه المطلوبه</span>
         @endif
+
+
     </div>
 </div>
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/jquery/jquery.min.js')}}"></script>

@@ -107,6 +107,7 @@ class DashboardController extends Controller
                         DB::raw('(SUM(rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) / SUM(part_1 + part_2 + part_3 + part_4)) * 100 as percentage')
                     )->where('year_id', $year_id)->groupBy('mokasher_id');
                 }])->where('program_id', $program_id)->get();
+
             }
             return view('admins.dashboard.mokashrat' , compact('mokashers' ,'Execution_years' ,'program_id','year_id','kheta_id' ,'part' ));
         }else
@@ -141,6 +142,7 @@ class DashboardController extends Controller
     public  function print_mokasherat_gehat_report($kheta_id , $year_id = null , $part = null )
     {
         $years  = Execution_year::where('kheta_id', $kheta_id)->get();
+        $year = Execution_year::where('id' , $year_id)->first() ;
         $gehat = User::where('kehta_id', $kheta_id)->get() ;
         if (!empty($year_id)) {
 
@@ -149,9 +151,10 @@ class DashboardController extends Controller
                 ->groupBy('mokasher_id')
                 ->with('mokasher')
                 ->get();
-            return  view('admins.new_reports.year_mokaser_report'  ,  compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part')) ;
+
+            return  view('admins.new_reports.year_mokaser_report'  ,  compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part' , 'year')) ;
         }
-        return  view('admins.new_reports.year_mokaser_report'  ,  compact('years' ,'kheta_id' ,'year_id','gehat' ,'part')) ;
+        return  view('admins.new_reports.year_mokaser_report'  ,  compact('years' ,'kheta_id' ,'year_id','gehat' ,'part' , 'year')) ;
     }
 
     /** Final Report  */
@@ -171,9 +174,13 @@ class DashboardController extends Controller
         return view('admins.reports.gehat_target' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
     }
 
+
+
     public  function print_gehat_targets_report($kheta_id , $year_id = null , $part = null )
     {
         $years  = Execution_year::where('kheta_id', $kheta_id)->get();
+        $year = Execution_year::where('id' , $year_id)->first() ;
+
         $gehat = User::where('kehta_id', $kheta_id)->get() ;
         if (!empty($year_id)) {
             $results = MokasherGehaInput::select('mokasher_id')
@@ -181,9 +188,26 @@ class DashboardController extends Controller
                 ->groupBy('mokasher_id')
                 ->with('mokasher')
                 ->get();
-            return view('admins.new_reports.gehat_target' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part'));
+            return view('admins.new_reports.gehat_target' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part' ,'year'));
         }
-        return view('admins.new_reports.gehat_target' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
+        return view('admins.new_reports.gehat_target' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part' ,'year'));
+    }
+    public function print_gehat_targets_report2($kheta_id , $year_id = null , $part = null )
+    {
+        $years  = Execution_year::where('kheta_id', $kheta_id)->get();
+        $year = Execution_year::where('id' , $year_id)->first() ;
+
+        $gehat = User::where('kehta_id', $kheta_id)->get() ;
+        if (!empty($year_id)) {
+            $results = MokasherGehaInput::select('mokasher_id')
+                ->where('year_id', $year_id)
+                ->groupBy('mokasher_id')
+                ->with('mokasher')
+                ->get();
+
+            return view('admins.new_reports.gehat_target2' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part' ,'year'));
+        }
+        return view('admins.new_reports.gehat_target2' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part' ,'year'));
     }
 
 
@@ -253,29 +277,73 @@ class DashboardController extends Controller
     {
         $years  = Execution_year::where('kheta_id', $kheta_id)->get();
         $gehat = User::where('kehta_id', $kheta_id)->get() ;
+        $year = Execution_year::where('id' , $year_id)->first() ;
         if (!empty($year_id)) {
 
             $results = MokasherGehaInput::select('geha_id')
                 ->where('year_id', $year_id)
                 ->groupBy('geha_id')
                 ->get();
-            return view('admins.new_reports.uploaded_files_report' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part'));
+            return view('admins.new_reports.uploaded_files_report' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part' ,'year'));
         }
-        return view('admins.new_reports.uploaded_files_report' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
-
+        return view('admins.new_reports.uploaded_files_report' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part' , 'year'));
     }
+
+    public function print_gehat_mokasherat2 ($kheta_id , $year_id = null , $part = null)
+    {
+        $years  = Execution_year::where('kheta_id', $kheta_id)->get();
+        $gehat = User::where('kehta_id', $kheta_id)->get() ;
+        $year = Execution_year::where('id' , $year_id)->first() ;
+        if (!empty($year_id)) {
+
+            $results = MokasherGehaInput::select('geha_id')
+                ->where('year_id', $year_id)
+                ->groupBy('geha_id')
+                ->get();
+            return view('admins.new_reports.uploaded_files_report2' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part' ,'year'));
+        }
+        return view('admins.new_reports.uploaded_files_report2' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part' , 'year'));
+    }
+
 
   /* Report  For Histogram  */
     public  function Histogram_kheta_objectives_dashboard($kheta_id): \Illuminate\View\View
     {
         $Execution_years = Execution_year::where('kheta_id', $kheta_id)->get();
-
+        $ex_year  =Execution_year::where(['selected' =>  1 , 'kheta_id'=> $kheta_id])->first();
+        $year_id = $ex_year->id ;
         $objectives  = Objective::withCount('goals')->with(['goals.programs.moksherat.mokasher_geha_inputs' => function ($query) use ($Execution_years) {
             $query->select('mokasher_id')->whereIn('year_id', $Execution_years->pluck('id'))->groupBy('mokasher_id');
         }  ])->where('kheta_id', $kheta_id)->get();
 
-        return view('admins.reports.add_mokasher_histogam.objectives', compact('objectives','kheta_id' ,  'Execution_years'));
+        return view('admins.reports.add_mokasher_histogam.objectives', compact('objectives','kheta_id' ,  'Execution_years' , 'year_id'));
     }
+
+    public function print_Histogram_kheta_objectives_dashboard($kheta_id , $year_id): \Illuminate\View\View
+    {
+        if(!empty($year_id)) {
+            $Execution_years = Execution_year::where('kheta_id', $kheta_id)->get();
+            $objectives = Objective::withCount('goals')->with(['goals.programs.moksherat.mokasher_geha_inputs' => function ($query) use ($year_id) {
+                $query->select('mokasher_id',
+                    DB::raw('(SUM(rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) / SUM(part_1 + part_2 + part_3 + part_4)) * 100 as percentage')
+                )->where('year_id', $year_id)->groupBy('mokasher_id');
+            }])->where('kheta_id', $kheta_id)->get();
+            return view('admins.new_reports.print_objectives', compact('Execution_years', 'objectives' ,'year_id' ,'kheta_id'));
+        }else {
+            $first_year = Execution_year::where('kheta_id', $kheta_id)->first();
+            $year_id = $first_year->id;
+            $Execution_years = Execution_year::where('kheta_id', $kheta_id)->get();
+
+            $objectives = Objective::withCount('goals')->with(['goals.programs.moksherat.mokasher_geha_inputs' => function ($query) {
+                $query->select('mokasher_id',
+                    DB::raw('(SUM(rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) / SUM(part_1 + part_2 + part_3 + part_4)) * 100 as percentage')
+                )->groupBy('mokasher_id');
+            }])->where('kheta_id', $kheta_id)->get();
+        }
+        return view('admins.new_reports.print_objectives', compact('objectives', 'kheta_id', 'Execution_years' , 'year'));
+    }
+
+
     public function Histogram_goal_statastics($kheta_id , $objective_id)
     {
         $Execution_years = Execution_year::where('kheta_id', $kheta_id)->get();
@@ -383,6 +451,8 @@ class DashboardController extends Controller
     {
         $years = Execution_year::where('kheta_id', $kheta_id)->get();
         $gehat = User::where('kehta_id', $kheta_id)->get();
+        $year = Execution_year::where('id' , $year_id)->first() ;
+
 
         if (!empty($year_id)) {
             $results = MokasherGehaInput::with('mokasher', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
@@ -407,11 +477,15 @@ class DashboardController extends Controller
                         'program' => $mokasher->program->program ?? 'N/A',
                         'goal' => $mokasher->program->goal->goal ?? 'N/A',
                         'objective' => $mokasher->program->goal->objective->objective ?? 'N/A',
+                        'mongaz' => $total_rates ,
+                        'target' => $group->sum('target') // Get the total target from all grouped records
                     ];
                 })
                 ->filter()
                 ->values();
-            return view('admins.new_reports.mokasers_wezara', compact('results', 'years', 'year_id', 'kheta_id', 'gehat'));
+
+
+            return view('admins.new_reports.mokasers_wezara', compact('results', 'years', 'year_id', 'kheta_id', 'gehat' , 'year'));
         }
     }
 

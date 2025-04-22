@@ -33,6 +33,11 @@
         {
             font-size: 15px;
         }
+        .s_logo
+        {
+            width: 100%;
+            height: 163px;
+        }
         .top-header .box-1
         {
             text-align: center;
@@ -74,11 +79,6 @@
             color: #fff;
             padding: 5px;
             border-radius: 4px;
-        }
-        .s_logo
-        {
-            width: 100%;
-            height: 163px;
         }
         @media print {
             #print_report
@@ -144,7 +144,7 @@
         </div>
         <div class="col-md-5 box-2">
             <h1>نظام أداء جامعة بنها </h1>
-            <h3> تقرير مستهدف الجهات - عام {{ $year->year_name }} </h3>
+            <h3> تقرير مؤشرات الوزارة - عام {{ $year->year_name }} </h3>
             <p><?php echo date('d-m-Y'); ?></p>
         </div>
         <div class="col-md-4">
@@ -176,74 +176,51 @@
             </table>
         </div>
     </div>
-    <div class="card">
-        @if(!empty($results))
-            <div class="table-responsive">
-                <table id="datatable" class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>المؤشر</th>
-                        <th style="width: 387px;">الجهه</th>
-                        <th style="width: 100px">المستهدف</th>
-                        <th style="width: 100px">الربع الأول</th>
-                        <th style="width: 100px">الربع الثانى</th>
-                        <th style="width: 100px">الربع الثالث</th>
-                        <th style="width: 100px">الربع الرابع</th>
-                        <th style="width: 100px">اجمالى المنجز</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @forelse($results as $result)
-                        @php
-                            $indicatorName = $result->mokasher->name;
-                        @endphp
-                        {{-- شرط إظهار الصفوف التي تحتوي على الكلمة "عدد" فقط --}}
-                        @if($result->mokasher->addedBy == 0 && strpos($indicatorName, 'عدد') !== false)
-                            @php
-                                $geha_execution  = \App\Models\MokasherGehaInput::with('geha')->where('mokasher_id', $result->mokasher_id)->get();
-                                $mokasher_total = 0; // إجمالي المؤشر لهذا الـ mokasher
-                            @endphp
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td style="width: 387px;">{{ $indicatorName }}</td>
-                                <td colspan="8">
-                                    <table class="table table-bordered mb-0">
-                                        <tbody>
-                                        @foreach($geha_execution as $geha)
-                                            @php
-                                                $total = $geha->part_1 + $geha->part_2 + $geha->part_3 + $geha->part_4;
-                                                $mokasher_total += $total; // جمع القيم لحساب الإجمالي
-                                            @endphp
-                                            <tr>
-                                                <td style="width: 387px;">{{ $geha->geha->geha }}</td>
-                                                <td style="width: 100px">{{ $geha->target }}</td>
-                                                <td style="width: 100px">{{ $geha->part_1 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_2 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_3 }}</td>
-                                                <td style="width: 100px">{{ $geha->part_4 }}</td>
-                                                <td style="width: 100px">{{ $total }}</td>
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        @endif
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center">No data available</td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
-        @else
-            <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه المطلوبه</span>
-        @endif
-
-    </div>
-</div>
+       <div class="card">
+                    @if(!empty($results))
+                        <div class="table-responsive">
+                            <table  class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th> الغاية</th>
+                                    <th>الهدف</th>
+                                    <th>البرنامج</th>
+                                    <th>المؤشر</th>
+                                    <th>الأداء</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($results as $result)
+                                    <tr>
+                                        <td>{{ $result['objective'] }}</td>
+                                        <td>{{ $result['goal'] }}</td>
+                                        <td>{{ $result['program'] }}</td>
+                                        <td>{{ $result['name'] }}</td>
+                                        <td style="width: 85px">
+                                            @if($result['performance'] < 50)
+                                                <span class="performance" style="background-color: #f00;">
+                                                    {{ $result['performance'] }} %
+                                                </span>
+                                            @elseif($result['performance'] >= 50 && $result['performance'] < 90)
+                                                <span class="performance" style="background-color: #f8de26;">
+                                            {{ $result['performance'] }} %
+                                            </span>
+                                            @elseif($result['performance'] >= 90 && $result['performance'] <= 100)
+                                                <span class="performance" style="background-color: #00ff00;">
+                                                {{ $result['performance'] }} %
+                                                    </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <span class="badge badge-soft-danger font-size-13">برجاء أختيار السنه المطلوبه</span>
+                    @endif
+                </div>
+       </div>
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/jquery/jquery.min.js')}}"></script>
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
 <script src="{{asset(PUBLIC_PATH.'/assets/admin/libs/metismenu/metisMenu.min.js')}}"></script>

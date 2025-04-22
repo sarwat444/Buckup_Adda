@@ -122,23 +122,17 @@ class UsersController extends Controller
 
         $sub_geha = $request->sub_geha;
         $year_id = $request->year_id;
-
         $gehat = $this->user->where('geha_id', Auth::user()->id)->get();
-        $kheta_id = Auth::user()->kehta_id;
-        $years = Execution_year::where('kheta_id', $kheta_id)->get();
+        $kehta_id = Auth::user()->kehta_id;
+        $years = Execution_year::where('kheta_id', $kehta_id)->get();
 
         if ($request->isMethod('post')) {
-            if (!empty($request->sub_geha)) {
-                $selected_geha = $request->sub_geha;
+            $results = MokasherGehaInput::with('mokasher', 'geha' , 'mokasher.program' , 'mokasher.program.goal' , 'mokasher.program.goal.objective')
+                ->where(['geha_id' => $request->geha, 'year_id' => $request->year_id])
+                ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+                ->get();
 
-                $results = MokasherGehaInput::with('mokasher', 'sub_geha')
-                    ->where('geha_id', Auth::user()->id)
-                    ->where(['sub_geha_id' => $request->sub_geha, 'year_id' => $request->year_id])
-                    ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
-                    ->get();
-
-                return view('gehat.reports.mokashert_year_report', compact('results', 'gehat', 'sub_geha', 'year_id', 'years'));
-            }
+                return view('gehat.reports.mokashert_year_report', compact('results', 'gehat', 'sub_geha', 'year_id', 'years' , 'kehta_id'));
         } else {
             return view('gehat.reports.mokashert_year_report', compact('gehat', 'years', 'sub_geha', 'year_id'));
         }
@@ -148,50 +142,46 @@ class UsersController extends Controller
 
     public function print_users_part($sub_geha, $part)
     {
-        $gehat = User::where('geha_id', Auth::user()->id)->get();
+        $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => Auth::user()->kehta_id])->get();
         $kheta = Kheta::where('id' ,  Auth::user()->kehta_id)->first() ;
-        $results = MokasherGehaInput::with('mokasher', 'sub_geha')
+        $geha_name = User::where('id' ,$sub_geha)->first() ;
+
+        $results = MokasherGehaInput::with('mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
             ->where('sub_geha_id', $sub_geha)
             ->selectRaw("* ,part_{$part} as mostahdf , rate_part_{$part} as rating , note_part_{$part} as note")
             ->get();
 
-        $data = [
-            'results' => $results,
-            'gehat' => $gehat,
-            'kheta_name' => $kheta->name,
-            'kehta_image' =>  $kheta->image ,
-            'selected_geha' => $sub_geha,
-            'report_name' => 'تقرير جهات ربع سنوى ' ,
-        ];
+// Order the collection by mokasher.program.goal.objective.id
+        $results = $results->sortBy(function ($result) {
+            return $result->mokasher->program->goal->objective->id;
+        });
 
-        // Generate PDF using TCPDF
-        $pdfService = new PDFService();
-        $pdfService->generateMokasherPartsPDF($data, 'mokashert_parts.pdf');
+        $kheta_name = $kheta->name ;
+        $kehta_image  = $kheta->image  ;
+        $selected_geha =  $geha_name ;
+        return  view('admins.new_reports.users_part_years' , compact('results' , 'gehat' ,'kheta_name' , 'kehta_image' , 'selected_geha' , 'part'  , 'geha_name')) ;
+
     }
 
 
     public function print_users_years($sub_geha, $year_id)
     {
-        $gehat = User::where('geha_id', Auth::user()->id)->get();
-        $kheta = Kheta::where('id' ,  Auth::user()->kehta_id)->first() ;
-        $results = MokasherGehaInput::with('mokasher', 'sub_geha')
+        $gehat = User::where(['is_manger' => 1, 'kehta_id' => Auth::user()->kehta_id])->get();
+        $kheta = Kheta::where('id', Auth::user()->kehta_id)->first();
+        $geha_name = User::where('id', $sub_geha)->first();
+
+        $results = MokasherGehaInput::with('mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
+            ->join('mokashers', 'mokashers.id', '=', 'mokasher_geha_inputs.mokasher_id')  // Join mokasher
+            ->join('programs', 'programs.id', '=', 'mokashers.program_id')  // Join program
+            ->join('goals', 'goals.id', '=', 'programs.goal_id')  // Join goal
+            ->join('objectives', 'objectives.id', '=', 'goals.objective_id')  // Join objective
             ->where('geha_id', Auth::user()->id)
             ->where(['sub_geha_id' => $sub_geha, 'year_id' => $year_id])
-            ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+            ->selectRaw("mokasher_geha_inputs.*, (part_1 + part_2 + part_3 + part_4) AS mostahdf, (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+            ->orderBy('objectives.id', 'asc')  // Order by the objective's id
             ->get();
+        return view('admins.new_reports.users_years', compact('results', 'geha_name'));
 
-        $data = [
-            'results' => $results,
-            'gehat' => $gehat,
-            'kheta_name' => $kheta->name,
-            'kehta_image' =>  $kheta->image ,
-            'report_name' => 'تقرير جهات  السنوى ' ,
-            'selected_geha' => $sub_geha,
-        ];
-
-        // Generate PDF using TCPDF
-        $pdfService = new PDFService();
-        $pdfService->generateMokasherYearsPDF($data, 'mokashert_years.pdf');
     }
 
 

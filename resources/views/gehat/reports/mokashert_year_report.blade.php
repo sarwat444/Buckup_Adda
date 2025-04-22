@@ -49,15 +49,8 @@
                         @csrf
                         <div class="row">
                             <div class="col-md-4">
-                                <label for="gehat"> الجهات </label>
-                                <select required id="gehat" class="form-control select2" name="sub_geha">
-                                    <option disabled selected> ...... </option>
-                                    @forelse($gehat as $geha)
-                                        <option value="{{ $geha->id }}" @if(isset($selected_geha) && $geha->id == $selected_geha) selected @endif>{{ $geha->geha }}</option>
-                                    @empty
-                                        <option disabled selected>لا يوجد ادارات</option>
-                                    @endforelse
-                                </select>
+                                <label for="gehat"> {{\Illuminate\Support\Facades\Auth::user()->geha}} </label>
+                                <input type="hidden"  class="form-control select2" name="geha"  value="{{\Illuminate\Support\Facades\Auth::user()->id}}">
                             </div>
                             <div class="col-md-6">
                                 <label for="part"> أختر السنه </label>
@@ -82,58 +75,74 @@
             <div class="card">
                 <div class="card-body">
                     @if(!empty($results))
-                        <a class="btn btn-primary mb-2" onclick="printReport('{{ $sub_geha }}', '{{ $year_id }}')"> <i class="bx bx-printer"></i> طباعه التقرير </a>
+                        <a class="btn btn-primary mb-2" onclick="printReport('{{\Illuminate\Support\Facades\Auth::user()->id }}', '{{ $year_id }}' , '{{$kehta_id}}')"> <i class="bx bx-printer"></i> طباعه مؤشرات الأدارة </a>
                         <div class="table-responsive">
-                          <table id="datatable" class="table table-bordered table-striped">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>المؤشر</th>
-                                <th>الجهه</th>
-                                <th>المستهدف</th>
-                                <th>المنجز</th>
-                                <th>الأداء</th>
-                                <th>ملاحظات</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @forelse($results as $result)
-                                @if(!empty($result->mokasher) && $result->mokasher->addedBy == 0  )
-                                @php
-                                         if($result->mostahdf == 0 )
-                                         {
-                                            $performance = 0  ;
-                                         }else
-                                         {
-                                             $performance = ($result->rating/$result->mostahdf)*100 ;
-                                          }
+                            <table id="datatable" class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الهدف</th>
+                                    <th>البرنامج</th>
+                                    <th>المؤشر</th>
+                                    <th>الجهه</th>
+                                    <th>المستهدف</th>
+                                    <th>المنجز</th>
+                                    <th>الأداء</th>
+                                    <th>ملاحظات</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach($results as $result)
+                                    @php
+                                        if ($result->mostahdf == 0 && $result->rating > 0) {
+                                            $performance = 100;
+                                        } elseif ($result->mostahdf == 0) {
+                                            $performance = 0;
+                                        } else {
+                                            $performance = ($result->rating / $result->mostahdf) * 100;
+                                            if ($performance > 100) {
+                                                $performance = 100;
+                                            }
+                                        }
+                                    @endphp
+                                    @if($result->mokasher->addedBy == 0)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
+                                            <td class="text-primary">{{ $result->mokasher->program->program }}</td>
+                                            <td>{{ $result->mokasher->name }}</td>
+                                            <td>{{ $result->geha->geha }}</td>
+                                            <td>{{ $result->mostahdf }}</td>
+                                            <td>{{ $result->rating }}</td>
+                                            <td>
+                                                @if($performance < 50)
+                                                    <span class="performance" style="background-color: #f00">{{ round($performance) }} %</span>
+                                                @elseif($performance >= 50 && $performance < 100)
+                                                    <span class="performance" style="background-color: #f8de26">{{ round($performance) }} %</span>
+                                                @elseif($performance == 100)
+                                                    <span class="performance" style="background-color: #00ff00">{{ round($performance) }} %</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if(!empty($result->note_part_1))
+                                                    {{$result->note_part_1}}
+                                                @elseif(!empty($result->note_part_2))
+                                                    {{$result->note_part_2}}
+                                                @elseif(!empty($result->note_part_3))
+                                                    {{$result->note_part_3}}
+                                                @elseif(!empty($result->note_part_4))
+                                                    {{$result->note_part_4}}
+                                                @else
+                                                    <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
 
-                                @endphp
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $result->mokasher->name }}</td>
-                                    <td> {{ $result->sub_geha->geha }}</td>
-                                    <td>{{ $result->mostahdf }}</td>
-                                    <td>{{ $result->rating }}</td>
-                                    <td>
-                                        @if($performance < 50 )
-                                            <span class="performance" style="background-color: #f00 ">{{round($performance)}} %</span>
-                                        @elseif($performance  >=  50 && $performance < 100 )
-                                            <span class="performance" style="background-color: #f8de26 ">{{round($performance)}} %</span>
-                                        @elseif($performance  ==  100)
-                                            <span class="performance" style="background-color: #00ff00 ">{{round($performance)}} %</span>
-                                        @endif
-                                    </td>
-                                    <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
-                                </tr>
-                                @endif
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center">لا يوجد بيانات</td>
-                                </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
+
+                                </tbody>
+                            </table>
                         </div>
                     @else
                         <span class="badge badge-soft-danger font-size-13">برجاء أختيار الجهه المطلوبه</span>

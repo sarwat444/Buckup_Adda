@@ -33,6 +33,11 @@
         {
             font-size: 15px;
         }
+        .s_logo
+        {
+            width: 100%;
+            height: 163px;
+        }
         .top-header .box-1
         {
             text-align: center;
@@ -134,14 +139,12 @@
         <i class="bx bx-printer download_pdf" id=""></i> طباعه التقرير
     </button>
     <div class="row top-header">
-        <div class="col-md-2 box-1">
-            <img src="https://test.germaniatek.net/public/assets/site/images/benha_logo.png" height="100">
-            <h3>جامعه بنها</h3>
-            <h4>2025-2026</h4>
+        <div class="col-md-3 box-1">
+            <img class="s_logo" src="{{asset(PUBLIC_PATH.'assets/site/images/s_logo.png')}}" height="100">
         </div>
-        <div class="col-md-6 box-2">
+        <div class="col-md-5 box-2">
             <h1>نظام أداء جامعة بنها </h1>
-            <h3>تقرير متابعة مؤشرات الوزاره</h3>
+            <h3> تقرير مؤشرات الوزارة - عام {{ $year->year_name }} </h3>
             <p><?php echo date('d-m-Y'); ?></p>
         </div>
         <div class="col-md-4">
@@ -183,6 +186,7 @@
                                     <th>الهدف</th>
                                     <th>البرنامج</th>
                                     <th>المؤشر</th>
+                                    <th>المستهدف</th>
                                     <th>الأداء</th>
                                 </tr>
                                 </thead>
@@ -193,19 +197,25 @@
                                         <td>{{ $result['goal'] }}</td>
                                         <td>{{ $result['program'] }}</td>
                                         <td>{{ $result['name'] }}</td>
+                                        <td>{{ $result['target'] }}</td>
+                                        <td>{{ $result['mongaz'] }}</td>
                                         <td style="width: 85px">
                                             @if($result['performance'] < 50)
                                                 <span class="performance" style="background-color: #f00;">
-            {{ $result['performance'] }} %
-        </span>
+                                                    {{ $result['performance'] }} %
+                                                </span>
                                             @elseif($result['performance'] >= 50 && $result['performance'] < 90)
                                                 <span class="performance" style="background-color: #f8de26;">
-            {{ $result['performance'] }} %
-        </span>
+                                            {{ $result['performance'] }} %
+                                            </span>
                                             @elseif($result['performance'] >= 90 && $result['performance'] <= 100)
                                                 <span class="performance" style="background-color: #00ff00;">
-            {{ $result['performance'] }} %
-        </span>
+                                                {{ $result['performance'] }} %
+                                                    </span>
+                                            @else
+                                                <span class="performance" style="background-color: #f00;">
+                                                   0 %
+                                                </span>
                                             @endif
                                         </td>
                                     </tr>

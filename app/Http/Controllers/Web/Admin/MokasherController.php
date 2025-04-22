@@ -186,41 +186,56 @@ class MokasherController extends Controller
 
     public function print_users_part($geha, $part , $kehta_id)
     {
-
         $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => $kehta_id])->get();
         $kheta = Kheta::where('id' ,  $kehta_id)->first() ;
-        $results = MokasherGehaInput::with('mokasher', 'geha')
+        $geha_name = User::where('id' , $geha)->first() ;
+
+        $results = MokasherGehaInput::with('mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
             ->where('geha_id', $geha)
             ->selectRaw("* ,part_{$part} as mostahdf , rate_part_{$part} as rating , note_part_{$part} as note")
             ->get();
 
+// Order the collection by mokasher.program.goal.objective.id
+        $results = $results->sortBy(function ($result) {
+            return $result->mokasher->program->goal->objective->id;
+        });
 
-        $data = [
-            'results' => $results,
-            'gehat' => $gehat,
-            'kheta_name' => $kheta->name,
-            'kehta_image' =>  $kheta->image ,
-            'selected_geha' => $geha,
-            'report_name' => 'تقرير جهات ربع سنوى ' ,
-        ];
-
-        // Generate PDF using TCPDF
-        $pdfService = new PDFService();
-        $pdfService->generateMokasherPartsPDF2($data, 'mokashert_parts.pdf');
+        $kheta_name = $kheta->name ;
+        $kehta_image  = $kheta->image  ;
+        $selected_geha =  $geha ;
+        return  view('admins.new_reports.users_part_years' , compact('results' , 'gehat' ,'kheta_name' , 'kehta_image' , 'selected_geha' , 'part'  , 'geha_name')) ;
     }
 
 
-    public function print_users_years($geha, $year_id , $kehta_id)
+    public function print_users_years($geha, $year_id, $kehta_id)
     {
-        $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => $kehta_id])->get();
-        $kheta = Kheta::where('id' ,  $kehta_id)->first() ;
+        $gehat = User::where(['is_manger' => 1, 'kehta_id' => $kehta_id])->get();
+        $kheta = Kheta::where('id', $kehta_id)->first();
+        $geha_name = User::where('id', $geha)->first();
 
-        $results = MokasherGehaInput::with('mokasher', 'geha' , 'mokasher.program' , 'mokasher.program.goal' , 'mokasher.program.goal.objective')
-            ->where(['geha_id' => $geha, 'year_id' =>$year_id])
-            ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+        $results = MokasherGehaInput::with([
+            'mokasher',
+            'geha',
+            'mokasher.program',
+            'mokasher.program.goal',
+            'mokasher.program.goal.objective'
+        ])
+            ->join('mokashers', 'mokashers.id', '=', 'mokasher_geha_inputs.mokasher_id')
+            ->join('programs', 'programs.id', '=', 'mokashers.program_id')
+            ->join('goals', 'goals.id', '=', 'programs.goal_id')
+            ->join('objectives', 'objectives.id', '=', 'goals.objective_id')
+            ->where(['geha_id' => $geha, 'year_id' => $year_id])
+            ->selectRaw("mokasher_geha_inputs.*, (part_1 + part_2 + part_3 + part_4) AS mostahdf, (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+            ->orderBy('objectives.id', 'asc')  // ترتيب الغايات
+            ->orderBy('goals.id', 'asc')       // ترتيب الأهداف
+            ->orderBy('programs.id', 'asc')    // ترتيب البرامج
+            ->orderBy('mokashers.id', 'asc')   // ترتيب المؤشرات
             ->get();
-          return  view('admins.new_reports.users_years' , compact('results') );
+
+
+        return view('admins.new_reports.users_years', compact('results', 'geha_name'));
     }
+
     public function print_users_years2($geha, $year_id , $kehta_id)
     {
         $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => $kehta_id])->get();

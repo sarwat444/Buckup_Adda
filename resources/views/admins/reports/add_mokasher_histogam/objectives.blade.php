@@ -17,6 +17,7 @@
             </div>
         </div>
     </div>
+
     <div class="row">
         @if(!empty($objectives))
             @foreach ($objectives  as $objective)
@@ -138,6 +139,8 @@
                     chart.render();
                 </script>
     @endforeach
-    @endif
+
+        @endif
+    </div>
 @endsection
 

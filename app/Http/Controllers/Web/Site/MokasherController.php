@@ -216,18 +216,33 @@ class MokasherController extends Controller
         return redirect()->back()->with('success', 'تم توجيه المؤشر  للجهه بنجاح ');
     }
 
-        public function sub_geha_moksherat()
+    public function sub_geha_moksherat()
     {
-        $mokashert = Mokasher::whereHas('mokasher_geha_inputs', function ($query) {
-            $query->where('sub_geha_id', Auth::user()->id);
-        })->with('program' , 'program.goal' , 'program.goal.objective')->with(['mokasher_geha_inputs' => function ($query) {
-            $query->where('sub_geha_id', Auth::user()->id);
-        }])->with('addedBy_fun')->get();
+        $selected_year = Execution_year::where('selected', 1)->first();
 
+        if (!$selected_year) {
+            return redirect()->back()->with('error', 'No selected execution year found.');
+        }
 
+        $mokashert = Mokasher::whereHas('mokasher_geha_inputs', function ($query) use ($selected_year) {
+            $query->where([
+                'sub_geha_id' => Auth::user()->id,
+                'year_id' => $selected_year->id
+            ]);
+        })
+            ->with('program', 'program.goal', 'program.goal.objective')
+            ->with(['mokasher_geha_inputs' => function ($query) use ($selected_year) {
+                $query->where([
+                    'sub_geha_id' => Auth::user()->id,
+                    'year_id' => $selected_year->id
+                ]);
+            }])
+            ->with('addedBy_fun')
+            ->get();
 
         return view('sub_geha.moksherat.index', compact('mokashert'));
     }
+
 
     public function sub_geha_mokaseerinput($id)
     {

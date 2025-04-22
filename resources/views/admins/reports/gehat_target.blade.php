@@ -66,6 +66,9 @@
                         <a class="btn btn-primary mb-2" onclick="printReport('{{ $kheta_id }}', '{{ $year_id }}', '{{ $part }}')">
                             <i class="bx bx-printer"></i> طباعه التقرير
                         </a>
+                        <a class="btn btn-primary mb-2" onclick="printReport2('{{ $kheta_id }}', '{{ $year_id }}', '{{ $part }}')">
+                            <i class="bx bx-printer"></i> طباعة تقرير الأعداد
+                        </a>
                         <div class="table-responsive">
                             <table id="datatable" class="table table-bordered table-striped">
                                 <thead>
@@ -139,6 +142,14 @@
     <script>
         function printReport(kheta_id, year_id, part) {
             window.location.href = '{{ route('dashboard.print_gehat_targets_report', ['kheta_id' => ':kheta_id', 'year_id' => ':year_id', 'part' => ':part']) }}'
+                .replace(':kheta_id', kheta_id)
+                .replace(':year_id', year_id)
+                .replace(':part', part);
+        }
+    </script>
+    <script>
+        function printReport2(kheta_id, year_id, part) {
+            window.location.href = '{{ route('dashboard.print_gehat_targets_report2', ['kheta_id' => ':kheta_id', 'year_id' => ':year_id', 'part' => ':part']) }}'
                 .replace(':kheta_id', kheta_id)
                 .replace(':year_id', year_id)
                 .replace(':part', part);

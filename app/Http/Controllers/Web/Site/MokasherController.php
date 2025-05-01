@@ -41,7 +41,7 @@ class MokasherController extends Controller
             $selectedYearId = $selectedYear->id;
 
             $mokashert = $this->mokasherModel
-                ->where(function($query) use ($authUserId, $selectedYearId) { // Pass $selectedYearId here
+                ->where(function($query) use ($authUserId, $selectedYearId) {
                     $query->where('addedBy', 0)
                           ->orWhere(function($query) use ($authUserId, $selectedYearId) { // And here
                               $query->where('addedBy', '!=', $authUserId)
@@ -218,7 +218,9 @@ class MokasherController extends Controller
 
     public function sub_geha_moksherat()
     {
-        $selected_year = Execution_year::where('selected', 1)->first();
+        $geha_id = Auth::user()->geha_id ;
+        $user =  User::where('id' , $geha_id)->first() ;
+        $selected_year = Execution_year::where(['selected' => 1 ,  'kheta_id' => $user->kehta_id ])->first();
 
         if (!$selected_year) {
             return redirect()->back()->with('error', 'No selected execution year found.');

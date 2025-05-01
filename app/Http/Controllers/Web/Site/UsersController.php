@@ -110,6 +110,7 @@ class UsersController extends Controller
 
     }
 
+
     /** Print Parts Report */
 
 
@@ -137,27 +138,22 @@ class UsersController extends Controller
 
     /** Print Years Report */
 
-    public function print_users_part($sub_geha, $part)
+    public function print_users_part($geha, $part)
     {
-        $gehat = User::where(['is_manger'=> 1 , 'kehta_id' => Auth::user()->kehta_id])->get();
-        $kheta = Kheta::where('id' ,  Auth::user()->kehta_id)->first() ;
-        $geha_name = User::where('id' ,$sub_geha)->first() ;
+        $geha_name = User::where('id' , $geha)->first() ;
 
         $results = MokasherGehaInput::with('mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
-            ->where('sub_geha_id', $sub_geha)
+            ->where('geha_id', $geha)
             ->selectRaw("* ,part_{$part} as mostahdf , rate_part_{$part} as rating , note_part_{$part} as note")
             ->get();
 
-// Order the collection by mokasher.program.goal.objective.id
         $results = $results->sortBy(function ($result) {
             return $result->mokasher->program->goal->objective->id;
         });
 
-        $kheta_name = $kheta->name ;
-        $kehta_image  = $kheta->image  ;
-        $selected_geha =  $geha_name ;
-        return  view('admins.new_reports.users_part_years' , compact('results' , 'gehat' ,'kheta_name' , 'kehta_image' , 'selected_geha' , 'part'  , 'geha_name')) ;
+        $selected_geha =  $geha ;
 
+        return  view('admins.new_reports.users_part_years' , compact('results'  , 'selected_geha' , 'part'  , 'geha_name')) ;
     }
 
 

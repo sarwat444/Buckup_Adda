@@ -142,8 +142,6 @@
                     @else
                         <span class="badge badge-soft-danger font-size-13">برجاء أختيار الجهه المطلوبه</span>
                     @endif
-
-
                 </div>
             </div>
         </div>

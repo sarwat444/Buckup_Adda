@@ -93,24 +93,21 @@ class UsersController extends Controller
     /** Report For Every Part - Report  #1  */
     public function get_users_reports(Request $request)
     {
-
-        $gehat = $this->user->where('geha_id', Auth::user()->id)->get();
         if ($request->isMethod('post')) {
-            if (!empty($request->sub_geha)) {
-
-                $selected_geha = $request->sub_geha;
+            if (!empty($request->geha)) {
+                $selected_geha = $request->geha;
                 $part = $request->part;
 
-                $results = MokasherGehaInput::with('sub_geha' ,'mokasher')
-                    ->where('sub_geha_id', $request->sub_geha)
+                $results = MokasherGehaInput::with('mokasher', 'geha')
+                    ->where('geha_id', $request->geha)
                     ->selectRaw("* ,part_{$request->part} as mostahdf , rate_part_{$request->part} as rating , note_part_{$request->part} as note")
                     ->get();
-
-                return view('gehat.reports.mokashert_parts_report', compact('results', 'gehat', 'selected_geha', 'part'));
+                return view('gehat.reports.mokashert_parts_report', compact('results', 'selected_geha', 'part'));
             }
         } else {
-            return view('gehat.reports.mokashert_parts_report', compact('gehat'));
+            return view('gehat.reports.mokashert_parts_report');
         }
+
     }
 
     /** Print Parts Report */
@@ -170,16 +167,11 @@ class UsersController extends Controller
         $kheta = Kheta::where('id', Auth::user()->kehta_id)->first();
         $geha_name = User::where('id', $sub_geha)->first();
 
-        $results = MokasherGehaInput::with('mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
-            ->join('mokashers', 'mokashers.id', '=', 'mokasher_geha_inputs.mokasher_id')  // Join mokasher
-            ->join('programs', 'programs.id', '=', 'mokashers.program_id')  // Join program
-            ->join('goals', 'goals.id', '=', 'programs.goal_id')  // Join goal
-            ->join('objectives', 'objectives.id', '=', 'goals.objective_id')  // Join objective
-            ->where('geha_id', Auth::user()->id)
-            ->where(['sub_geha_id' => $sub_geha, 'year_id' => $year_id])
-            ->selectRaw("mokasher_geha_inputs.*, (part_1 + part_2 + part_3 + part_4) AS mostahdf, (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
-            ->orderBy('objectives.id', 'asc')  // Order by the objective's id
-            ->get();
+        $results = MokasherGehaInput::with('mokasher', 'geha' , 'mokasher.program' , 'mokasher.program.goal' , 'mokasher.program.goal.objective')
+        ->where(['geha_id' => $request->geha, 'year_id' => $request->year_id])
+        ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+        ->get();
+
         return view('admins.new_reports.users_years', compact('results', 'geha_name'));
 
     }

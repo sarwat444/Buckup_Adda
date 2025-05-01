@@ -45,34 +45,26 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <form  method="post" action="{{route('gehat.get_users_reports')}}">
+                    <form  method="post" action="{{route('gehat.quarter_year' ,  $kehta_id)}}">
                         @csrf
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="gehat"> الجهات </label>
-                                    <select required id="gehat" class="form-control select2" name="sub_geha">
-                                        <option disabled selected> ...... </option>
-                                        @forelse($gehat as $geha)
-                                            <option value="{{ $geha->id }}" @if(isset($selected_geha) && $geha->id == $selected_geha) selected @endif>{{ $geha->geha }}</option>
-                                        @empty
-                                            <option disabled selected>لا يوجد ادارات</option>
-                                        @endforelse
-
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="part"> أختر الربع السنوى </label>
-                                    <select required id="part" class="form-control" name="part">
-                                        <option value="1"> الربع الأول </option>
-                                        <option value="2"> الربع الثانى  </option>
-                                        <option value="3"> الربع الثالث  </option>
-                                        <option value="4"> الربع الرابع  </option>
-                                    </select>
-                                    </div>
-                                <div class="col-md-2 mt-4">
-                                    <button class="btn btn-primary btn-block" style="width: 100%; margin-top: 2px;"><i class="bx bx-search"></i>  بحث </button>
-                                </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="gehat"> {{\Illuminate\Support\Facades\Auth::user()->geha}} </label>
+                                <input type="hidden"  class="form-control select2" name="geha"  value="{{\Illuminate\Support\Facades\Auth::user()->id}}">
                             </div>
+                            <div class="col-md-6">
+                                <label for="part"> أختر الربع السنوى </label>
+                                <select required id="part" class="form-control" name="part">
+                                    <option value="1"> الربع الأول </option>
+                                    <option value="2"> الربع الثانى  </option>
+                                    <option value="3"> الربع الثالث  </option>
+                                    <option value="4"> الربع الرابع  </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mt-4">
+                                <button class="btn btn-primary btn-block" style="width: 100%; margin-top: 2px;"><i class="bx bx-search"></i>  بحث </button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>

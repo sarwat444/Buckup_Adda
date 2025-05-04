@@ -199,7 +199,7 @@
     </div>
     <div class="card">
         @if(!empty($results))
-            <table class="table-responsive">
+            <div class="table-responsive">
                 <table id="datatable" class="table table-bordered table-striped">
                     <thead>
                     <tr>
@@ -217,15 +217,15 @@
                     <tbody>
                     @forelse($results as $result)
                         @php
-                            if($result->mostahdf == 0 )
-                            {
-                               $performance = 0  ;
-                            }else
-                            {
-                                       $performance = ($result->rating/$result->mostahdf)*100 ;
-                             }
+                            $performance = 0;
+                            if ($result->mostahdf > 0) {
+                                $performance = min(($result->rating / $result->mostahdf) * 100, 100);
+                            }else if($result->rating > $result->mostahdf)
+                                {
+                                    $performance = 100 ;
+                                }
                         @endphp
-                        @if($result->mokasher->addedBy == 0 )
+                        @if($result->mokasher->addedBy == 0)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $result->mokasher->program->goal->objective->objective }}</td>
@@ -235,13 +235,13 @@
                                 <td>{{ $result->mostahdf }}</td> <!-- Adjust this according to your data structure -->
                                 <td>{{ $result->rating }}</td> <!-- Adjust this according to your data structure -->
                                 <td style="width: 100px">
-                                    @if($performance < 50 )
-                                        <span class="performance" style="background-color: #f00 ">{{$performance}} %</span>
-                                    @elseif($performance  >=  50 && $performance < 100 )
-                                        <span class="performance" style="background-color: #f8de26 ">{{$performance}} %</span>
-                                    @elseif($performance  ==  100)
-                                        <span class="performance" style="background-color: #00ff00 ">{{$performance}} %</span>
-                                    @endif
+                                    @php
+                                        $performanceColor = $performance < 50 ? '#f00' :
+                                                            ($performance < 90 ? '#f8de26' : '#00ff00');
+                                    @endphp
+                                    <span class="performance" style="background-color: {{ $performanceColor }};">
+                                        {{ round($performance) }} %
+                                   </span>
                                 </td>
                                 <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
 
@@ -257,7 +257,7 @@
                     @endforelse
                     </tbody>
                 </table>
-            </table>
+            </div>
         @else
             <span class="badge badge-soft-danger font-size-13">برجاء أختيار الجهه المطلوبه</span>
         @endif

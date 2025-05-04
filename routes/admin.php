@@ -26,7 +26,7 @@ use App\Http\Controllers\Web\Admin\{
 
 use App\Http\Controllers\Web\Admin\Setting\{CourseSettingController};
 use Illuminate\Support\Facades\Route;
-CONST PUBLIC_PATH  = 'public/' ;
+CONST PUBLIC_PATH  = '' ;
 
 /** admin auth routes */
 Route::controller(LoginController::class)->prefix('admins')->group(function () {
@@ -181,12 +181,13 @@ Route::group(['prefix' => 'admins/dashboard', 'middleware' => 'auth:admin', 'as'
     /** تقرير  الربع سنوى  والتقرير السنوى للجهات */
 
     Route::match(['get' , 'post'] ,'quarter_year/{kehta_id}' , [MokasherController::class , 'quarter_year'])->name('quarter_year') ;
+    Route::get('print_users_part/{geha}/{part}/{kehta_id}', [MokasherController::class , 'print_users_part'])->name('print_users_part');
 
     Route::match(['get', 'post'], 'get_users_reports_year/{kehta_id}', [MokasherController::class, 'get_users_reports_year'])->name('get_users_reports_year');
 
     /** طباعه التقارير  الربع سنوى والسنوي **/
 
-    Route::get('print_users_part/{geha}/{part}/{kehta_id}', [MokasherController::class , 'print_users_part'])->name('print_users_part');
+
 
     Route::get('print_users_years/{geha}/{year_id}/{kehta_id}', [MokasherController::class , 'print_users_years'])->name('print_users_years');
     Route::get('print_users_years2/{geha}/{year_id}/{kehta_id}', [MokasherController::class , 'print_users_years2'])->name('print_users_years2');

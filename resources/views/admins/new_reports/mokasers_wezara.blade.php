@@ -187,6 +187,7 @@
                                     <th>البرنامج</th>
                                     <th>المؤشر</th>
                                     <th>المستهدف</th>
+                                    <th>المنجز</th>
                                     <th>الأداء</th>
                                 </tr>
                                 </thead>
@@ -208,14 +209,14 @@
                                                 <span class="performance" style="background-color: #f8de26;">
                                             {{ $result['performance'] }} %
                                             </span>
-                                            @elseif($result['performance'] >= 90 && $result['performance'] <= 100)
+                                            @elseif($result['performance'] >= 90 && $result['performance'] < 100)
                                                 <span class="performance" style="background-color: #00ff00;">
                                                 {{ $result['performance'] }} %
                                                     </span>
-                                            @else
-                                                <span class="performance" style="background-color: #f00;">
-                                                   0 %
-                                                </span>
+                                            @elseif($result['performance'] >= 100)
+                                                <span class="performance" style="background-color: #00ff00;">
+                                                100 %
+                                                    </span>
                                             @endif
                                         </td>
                                     </tr>

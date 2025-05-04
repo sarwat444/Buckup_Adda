@@ -49,7 +49,7 @@ class RatingMembersController extends Controller
         $mokashert = [];
         if (!$mokasher_geha_input->isEmpty()) {
             $mokasher_ids = $mokasher_geha_input->pluck('mokasher_id')->toArray();
-            $mokashert = Mokasher::with('addedBy_fun' ,'mokasher_geha_inputs')->whereIn('id', $mokasher_ids)->get();
+            $mokashert = Mokasher::with('addedBy_fun' ,'mokasher_geha_inputs')->whereIn('id', $mokasher_ids)->where('addedby' , 0)->get();
         }
 
         return view('ratingMembers.moksherat.index', compact('mokashert'));

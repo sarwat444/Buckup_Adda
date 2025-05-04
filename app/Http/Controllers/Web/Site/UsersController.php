@@ -99,8 +99,8 @@ class UsersController extends Controller
                 $part = $request->part;
 
                 $results = MokasherGehaInput::with('mokasher', 'geha')
-                    ->where('geha_id', $request->geha)
-                    ->selectRaw("* ,part_{$request->part} as mostahdf , rate_part_{$request->part} as rating , note_part_{$request->part} as note")
+                    ->where('geha_id', $selected_geha)
+                    ->selectRaw("*, part_{$part} as mostahdf, rate_part_{$part} as rating, note_part_{$part} as note")
                     ->get();
                 return view('gehat.reports.mokashert_parts_report', compact('results', 'selected_geha', 'part'));
             }
@@ -142,14 +142,26 @@ class UsersController extends Controller
     {
         $geha_name = User::where('id' , $geha)->first() ;
 
-        $results = MokasherGehaInput::with('mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
-            ->where('geha_id', $geha)
-            ->selectRaw("* ,part_{$part} as mostahdf , rate_part_{$part} as rating , note_part_{$part} as note")
+
+        $results = MokasherGehaInput::query()
+            ->with(['mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective'])
+            ->join('mokashers', 'mokashers.id', '=', 'mokasher_geha_inputs.mokasher_id')
+            ->join('programs', 'programs.id', '=', 'mokashers.program_id')
+            ->join('goals', 'goals.id', '=', 'programs.goal_id')
+            ->join('objectives', 'objectives.id', '=', 'goals.objective_id')
+            ->where('mokasher_geha_inputs.geha_id', $geha)
+            ->selectRaw("
+            mokasher_geha_inputs.*,
+            part_{$part} as mostahdf,
+            rate_part_{$part} as rating,
+            note_part_{$part} as note
+        ")
+            ->orderBy('objectives.id')
+            ->orderBy('goals.id')
+            ->orderBy('programs.id')
+            ->orderBy('mokashers.id')
             ->get();
 
-        $results = $results->sortBy(function ($result) {
-            return $result->mokasher->program->goal->objective->id;
-        });
 
         $selected_geha =  $geha ;
 
@@ -157,20 +169,28 @@ class UsersController extends Controller
     }
 
 
-    public function print_users_years($sub_geha, $year_id)
+    public function print_users_years($geha, $year_id)
     {
-        $gehat = User::where(['is_manger' => 1, 'kehta_id' => Auth::user()->kehta_id])->get();
-        $kheta = Kheta::where('id', Auth::user()->kehta_id)->first();
-        $geha_name = User::where('id', $sub_geha)->first();
+        $results = MokasherGehaInput::with([
+            'mokasher',
+            'geha',
+            'mokasher.program',
+            'mokasher.program.goal',
+            'mokasher.program.goal.objective'
+        ])
+            ->join('mokashers', 'mokashers.id', '=', 'mokasher_geha_inputs.mokasher_id')
+            ->join('programs', 'programs.id', '=', 'mokashers.program_id')
+            ->join('goals', 'goals.id', '=', 'programs.goal_id')
+            ->join('objectives', 'objectives.id', '=', 'goals.objective_id')
+            ->where(['geha_id' => $geha, 'year_id' => $year_id])
+            ->selectRaw("mokasher_geha_inputs.*, (part_1 + part_2 + part_3 + part_4) AS mostahdf, (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
+            ->orderBy('objectives.id', 'asc')  // ترتيب الغايات
+            ->orderBy('goals.id', 'asc')       // ترتيب الأهداف
+            ->orderBy('programs.id', 'asc')    // ترتيب البرامج
+            ->orderBy('mokashers.id', 'asc')   // ترتيب المؤشرات
+            ->get();
 
-        $results = MokasherGehaInput::with('mokasher', 'geha' , 'mokasher.program' , 'mokasher.program.goal' , 'mokasher.program.goal.objective')
-        ->where(['geha_id' => $request->geha, 'year_id' => $request->year_id])
-        ->selectRaw("*, (part_1 + part_2 + part_3 + part_4) AS mostahdf  , (rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) AS rating")
-        ->get();
-
-        return view('admins.new_reports.users_years', compact('results', 'geha_name'));
-
-    }
-
+        return view('gehat.new_reports.users_years', compact('results'));
+        }
 
 }

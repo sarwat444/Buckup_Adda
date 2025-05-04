@@ -63,10 +63,10 @@
                             <div class="col-md-6">
                                 <label for="part"> أختر الربع السنوى </label>
                                 <select required id="part" class="form-control" name="part">
-                                    <option value="1"> الربع الأول </option>
-                                    <option value="2"> الربع الثانى  </option>
-                                    <option value="3"> الربع الثالث  </option>
-                                    <option value="4"> الربع الرابع  </option>
+                                    <option value="1" @if(!empty($part) && $part == 1 )  selected  @endif> الربع الأول </option>
+                                    <option value="2" @if(!empty($part) && $part == 2 )  selected  @endif> الربع الثانى  </option>
+                                    <option value="3" @if(!empty($part) && $part == 3 )  selected  @endif> الربع الثالث  </option>
+                                    <option value="4" @if(!empty($part) && $part == 4 )  selected  @endif> الربع الرابع  </option>
                                 </select>
                             </div>
                             <div class="col-md-2 mt-4">
@@ -99,37 +99,42 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+
                                 @forelse($results as $result)
                                     @php
-                                        if($result->mostahdf == 0 )
-                                        {
-                                           $performance = 0  ;
-                                        }else
-                                        {
-                                                   $performance = ($result->rating/$result->mostahdf)*100 ;
-                                         }
+                                        $performance = 0;
+                                        if ($result->mostahdf > 0) {
+                                            $performance = min(($result->rating / $result->mostahdf) * 100, 100);
+                                        }else if($result->rating > $result->mostahdf)
+                                            {
+                                                $performance = 100 ;
+                                            }
                                     @endphp
 
-                                    @if($result->mokasher->addedBy == 0 )
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $result->mokasher->name }}</td>
-                                                    <td> {{ $result->geha->geha }}</td>
-                                                    <td>{{ $result->mostahdf }}</td> <!-- Adjust this according to your data structure -->
-                                                    <td>{{ $result->rating }}</td> <!-- Adjust this according to your data structure -->
-                                                    <td>
-                                                        @if($performance < 50 )
-                                                            <span class="performance" style="background-color: #f00 ">{{$performance}} %</span>
-                                                        @elseif($performance  >=  50 && $performance < 100 )
-                                                            <span class="performance" style="background-color: #f8de26 ">{{$performance}} %</span>
-                                                        @elseif($performance  ==  100)
-                                                            <span class="performance" style="background-color: #00ff00 ">{{$performance}} %</span>
-                                                        @endif
-                                                    </td>
-                                                    <td> @if(!empty($result->note)){{$result->note}} @else  <span class="badge badge-soft-danger"> لا يوجد ملاحظات</span>@endif</td>
-
-                                                </tr>
-
+                                    @if($result->mokasher->addedBy == 0)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $result->mokasher->name }}</td>
+                                            <td>{{ $result->geha->geha }}</td>
+                                            <td>{{ $result->mostahdf }}</td>
+                                            <td>{{ $result->rating }}</td>
+                                            <td style="width: 100px">
+                                                @php
+                                                    $performanceColor = $performance < 50 ? '#f00' :
+                                                                        ($performance < 90 ? '#f8de26' : '#00ff00');
+                                                @endphp
+                                                <span class="performance" style="background-color: {{ $performanceColor }};">
+                                              {{ round($performance) }} %
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if(!empty($result->note))
+                                                    {{ $result->note }}
+                                                @else
+                                                    <span class="badge badge-soft-danger">لا يوجد ملاحظات</span>
+                                                @endif
+                                            </td>
+                                        </tr>
                                     @endif
                                 @empty
                                     <tr>

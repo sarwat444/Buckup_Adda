@@ -33,6 +33,12 @@ class Mokasher extends Model
     public function program()
     {
         return $this->belongsTo(Program::class , 'program_id' , 'id') ;
-
     }
+    public function getKhetaIdAttribute()
+    {
+        return optional($this->program?->goal?->objective?->kheta)->id;
+    }
+
+
+
 }

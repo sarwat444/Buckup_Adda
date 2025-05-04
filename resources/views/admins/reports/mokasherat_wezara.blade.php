@@ -80,6 +80,8 @@
                                     <th>الهدف</th>
                                     <th>البرنامج</th>
                                     <th>المؤشر</th>
+                                    <th>المستهدف </th>
+                                    <th>المنجز</th>
                                     <th>الأداء</th>
                                 </tr>
                                 </thead>
@@ -90,19 +92,25 @@
                                         <td>{{ $result['goal'] }}</td>
                                         <td>{{ $result['program'] }}</td>
                                         <td>{{ $result['name'] }}</td>
+                                        <td>{{ $result['target'] }}</td>
+                                        <td>{{ $result['mongaz'] }}</td>
                                         <td style="width: 85px">
                                             @if($result['performance'] < 50)
                                                 <span class="performance" style="background-color: #f00;">
-            {{ $result['performance'] }} %
-        </span>
+                                                    {{ $result['performance'] }} %
+                                                </span>
                                             @elseif($result['performance'] >= 50 && $result['performance'] < 90)
                                                 <span class="performance" style="background-color: #f8de26;">
-            {{ $result['performance'] }} %
-        </span>
-                                            @elseif($result['performance'] >= 90 && $result['performance'] <= 100)
+                                            {{ $result['performance'] }} %
+                                            </span>
+                                            @elseif($result['performance'] >= 90 && $result['performance'] < 100)
                                                 <span class="performance" style="background-color: #00ff00;">
-            {{ $result['performance'] }} %
-        </span>
+                                                {{ $result['performance'] }} %
+                                                    </span>
+                                            @elseif($result['performance'] >= 100)
+                                                <span class="performance" style="background-color: #00ff00;">
+                                                100 %
+                                                    </span>
                                             @endif
                                         </td>
                                     </tr>

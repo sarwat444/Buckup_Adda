@@ -151,7 +151,6 @@
         <div class="col-md-5 box-2">
             <h1>نظام أداء جامعة بنها </h1>
             <h3> تقرير السنوى  للجهات - عام 2024   </h3>
-            <h6>{{$geha_name->geha}}</h6>
             <p><?php echo date('d-m-Y'); ?></p>
         </div>
         <div class="col-md-4">
@@ -221,14 +220,20 @@
                                 <td>{{ $result->mokasher->name }}</td>
                                 <td>{{ $result->mostahdf }}</td>
                                 <td>{{ $result->rating }}</td>
-                                <td>
-                                    @if($performance < 50)
-                                        <span class="performance" style="background-color: #f00">{{ $performance }} %</span>
-                                    @elseif($performance >= 50 && $performance < 100)
-                                        <span class="performance" style="background-color: #f8de26">{{ $performance }} %</span>
-                                    @elseif($performance == 100)
-                                        <span class="performance" style="background-color: #00ff00">{{ $performance }} %</span>
+                                <td style="width: 100px">
+                                    @php
+                                        $roundedPerformance = isset($performance) && $performance > 0 ? round($performance, 2) : 0;
+                                        $finalPerformance = $roundedPerformance > 100 ? 100 : $roundedPerformance;
+                                    @endphp
+
+                                    @if($finalPerformance < 50)
+                                        <span class="performance" style="background-color: #f00">{{ $finalPerformance }} %</span>
+                                    @elseif($finalPerformance >= 50 && $finalPerformance < 90)
+                                        <span class="performance" style="background-color: #f8de26">{{ $finalPerformance }} %</span>
+                                    @elseif($finalPerformance >= 90 && $finalPerformance <= 100)
+                                        <span class="performance" style="background-color: #00ff00">{{ $finalPerformance }} %</span>
                                     @endif
+
                                 </td>
                                 <td>
                                     @if(!empty($result->note_part_1))

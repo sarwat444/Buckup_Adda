@@ -148,8 +148,11 @@ class DashboardController extends Controller
 
             $results = MokasherGehaInput::select('mokasher_id')
                 ->where('year_id', $year_id)
+                ->whereHas('mokasher.program.goal.objective', function ($q) use ($kheta_id) {
+                    $q->where('kheta_id', $kheta_id);
+                })
                 ->groupBy('mokasher_id')
-                ->with('mokasher')
+                ->with(['mokasher.program.goal.objective']) // load if needed
                 ->get();
 
             return  view('admins.new_reports.year_mokaser_report'  ,  compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part' , 'year')) ;
@@ -161,15 +164,20 @@ class DashboardController extends Controller
 
     public  function gehat_targets_report($kheta_id , $year_id = null , $part = null )
     {
+
         $years  = Execution_year::where('kheta_id', $kheta_id)->get();
         $gehat = User::where('kehta_id', $kheta_id)->get() ;
         if (!empty($year_id)) {
-                $results = MokasherGehaInput::select('mokasher_id')
-                    ->where('year_id', $year_id)
-                    ->groupBy('mokasher_id')
-                    ->with('mokasher')
-                    ->get();
-         return view('admins.reports.gehat_target' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part'));
+            $results = MokasherGehaInput::select('mokasher_id')
+                ->where('year_id', $year_id)
+                ->whereHas('mokasher.program.goal.objective', function ($q) use ($kheta_id) {
+                    $q->where('kheta_id', $kheta_id);
+                })
+                ->groupBy('mokasher_id')
+                ->with(['mokasher.program.goal.objective']) // load if needed
+                ->get();
+
+            return view('admins.reports.gehat_target', compact('results', 'years', 'year_id', 'kheta_id', 'gehat', 'part'));
         }
         return view('admins.reports.gehat_target' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
     }
@@ -201,8 +209,11 @@ class DashboardController extends Controller
         if (!empty($year_id)) {
             $results = MokasherGehaInput::select('mokasher_id')
                 ->where('year_id', $year_id)
+                ->whereHas('mokasher.program.goal.objective', function ($q) use ($kheta_id) {
+                    $q->where('kheta_id', $kheta_id);
+                })
                 ->groupBy('mokasher_id')
-                ->with('mokasher')
+                ->with(['mokasher.program.goal.objective']) // load if needed
                 ->get();
 
             return view('admins.new_reports.gehat_target2' , compact('results' ,'years' ,'year_id','kheta_id' ,'gehat' ,'part' ,'year'));
@@ -237,41 +248,58 @@ class DashboardController extends Controller
       }
       return view('admins.reports.uploaded_files_report' , compact('years' ,'kheta_id' ,'year_id','gehat' ,'part'));
   }
-    public function mokasherat_wezara($kheta_id , $year_id = null , $part = null )
+    public function mokasherat_wezara($kheta_id, $year_id = null, $part = null)
     {
         $years = Execution_year::where('kheta_id', $kheta_id)->get();
         $gehat = User::where('kehta_id', $kheta_id)->get();
 
+        $inputs = MokasherGehaInput::with('mokasher', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
+            ->where('year_id', $year_id)
+            ->whereHas('mokasher.program.goal.objective', function ($q) use ($kheta_id) {
+                $q->where('kheta_id', $kheta_id);
+            })
+            ->get();
 
-            $results = MokasherGehaInput::with('mokasher', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
-                ->where('year_id', $year_id)
-                ->get()
-                ->groupBy('mokasher_id')
-                ->map(function ($group) {
-                    $mokasher = $group->first()->mokasher;
-                    $types = json_decode($mokasher->type, true);
+        $results = $inputs
+            ->groupBy('mokasher_id')
+            ->map(function ($group) {
+                $mokasher = $group->first()->mokasher;
+                $types = json_decode($mokasher->type, true);
 
-                    if (!$types || !in_array(0, $types)) {
-                        return null;
-                    }
+                if (!$types || !in_array(0, $types)) {
+                    return null;
+                }
 
-                    $total_parts = $group->sum('part_1') + $group->sum('part_2') + $group->sum('part_3') + $group->sum('part_4');
-                    $total_rates = $group->sum('rate_part_1') + $group->sum('rate_part_2') + $group->sum('rate_part_3') + $group->sum('rate_part_4');
-                    $performance = $total_parts > 0 ? ($total_rates / $total_parts) * 100 : 0;
+                $total_parts = $group->sum('part_1') + $group->sum('part_2') + $group->sum('part_3') + $group->sum('part_4');
+                $total_rates = $group->sum('rate_part_1') + $group->sum('rate_part_2') + $group->sum('rate_part_3') + $group->sum('rate_part_4');
+                $performance = $total_parts > 0 ? ($total_rates / $total_parts) * 100 : 0;
 
-                    return [
-                        'name' => $mokasher->name,
-                        'performance' => round($performance),
-                        'program' => $mokasher->program->program ?? 'N/A',
-                        'goal' => $mokasher->program->goal->goal ?? 'N/A',
-                        'objective' => $mokasher->program->goal->objective->objective ?? 'N/A',
-                    ];
-                })
-                ->filter()
-                ->values();
-            return view('admins.reports.mokasherat_wezara', compact('results', 'years', 'year_id', 'kheta_id', 'gehat'));
+                return [
+                    'name' => $mokasher->name,
+                    'performance' => round($performance),
+                    'program' => $mokasher->program->program ?? 'N/A',
+                    'goal' => $mokasher->program->goal->goal ?? 'N/A',
+                    'objective' => $mokasher->program->goal->objective->objective ?? 'N/A',
+                    'objective_id' => $mokasher->program->goal->objective->id ?? 0,
+                    'goal_id' => $mokasher->program->goal->id ?? 0,
+                    'program_id' => $mokasher->program->id ?? 0,
+                    'mokasher_id' => $mokasher->id ?? 0,
+                    'mongaz' => $total_rates ,
+                    'target' => $total_parts
+                ];
+            })
+            ->filter()
+            ->sortBy([
+                fn($a, $b) => $a['objective_id'] <=> $b['objective_id'],
+                fn($a, $b) => $a['goal_id'] <=> $b['goal_id'],
+                fn($a, $b) => $a['program_id'] <=> $b['program_id'],
+                fn($a, $b) => $a['mokasher_id'] <=> $b['mokasher_id'],
+            ])
+            ->values();
 
+        return view('admins.reports.mokasherat_wezara', compact('results', 'years', 'year_id', 'kheta_id', 'gehat'));
     }
+
 
     public function print_gehat_mokasherat ($kheta_id , $year_id = null , $part = null)
     {
@@ -455,9 +483,15 @@ class DashboardController extends Controller
 
 
         if (!empty($year_id)) {
-            $results = MokasherGehaInput::with('mokasher', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
+
+            $inputs = MokasherGehaInput::with('mokasher', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective')
                 ->where('year_id', $year_id)
-                ->get()
+                ->whereHas('mokasher.program.goal.objective', function ($q) use ($kheta_id) {
+                    $q->where('kheta_id', $kheta_id);
+                })
+                ->get();
+
+            $results = $inputs
                 ->groupBy('mokasher_id')
                 ->map(function ($group) {
                     $mokasher = $group->first()->mokasher;
@@ -477,11 +511,21 @@ class DashboardController extends Controller
                         'program' => $mokasher->program->program ?? 'N/A',
                         'goal' => $mokasher->program->goal->goal ?? 'N/A',
                         'objective' => $mokasher->program->goal->objective->objective ?? 'N/A',
+                        'objective_id' => $mokasher->program->goal->objective->id ?? 0,
+                        'goal_id' => $mokasher->program->goal->id ?? 0,
+                        'program_id' => $mokasher->program->id ?? 0,
+                        'mokasher_id' => $mokasher->id ?? 0,
                         'mongaz' => $total_rates ,
-                        'target' => $group->sum('target') // Get the total target from all grouped records
+                        'target' => $total_parts
                     ];
                 })
                 ->filter()
+                ->sortBy([
+                    fn($a, $b) => $a['objective_id'] <=> $b['objective_id'],
+                    fn($a, $b) => $a['goal_id'] <=> $b['goal_id'],
+                    fn($a, $b) => $a['program_id'] <=> $b['program_id'],
+                    fn($a, $b) => $a['mokasher_id'] <=> $b['mokasher_id'],
+                ])
                 ->values();
 
 

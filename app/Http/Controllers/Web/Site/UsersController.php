@@ -142,7 +142,6 @@ class UsersController extends Controller
     {
         $geha_name = User::where('id' , $geha)->first() ;
 
-
         $results = MokasherGehaInput::query()
             ->with(['mokasher', 'geha', 'mokasher.program', 'mokasher.program.goal', 'mokasher.program.goal.objective'])
             ->join('mokashers', 'mokashers.id', '=', 'mokasher_geha_inputs.mokasher_id')

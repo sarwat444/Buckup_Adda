@@ -4,9 +4,11 @@
 <script src="{{ asset(PUBLIC_PATH . 'assets/admin/js/pages/apexcharts.init.js') }}"></script>
 
 @section('content')
+    @if(!empty($objectives))
     <a class="btn btn-primary" href="{{ route('dashboard.print_Histogram_kheta_objectives_dashboard', ['kheta_id' => $kheta_id, 'year_id' => $year_id]) }}">
         <i class="bx bx-printer"></i> طباعه التقرير
     </a>
+    @endif
 
     <div class="row mt-2">
         <div class="col-xl-6">

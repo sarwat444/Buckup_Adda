@@ -35,6 +35,7 @@
         <a href="{{route('dashboard.gehat_targets_report' ,$kheta->id )}}" class="btn btn-success btn-sm" style="margin-left: 5px"> تقرير مستهدف الجهات </a>
         <a href="{{route('dashboard.quarter_year' ,$kheta->id )}}" class="btn btn-success btn-sm" style="margin-left: 5px"> تقرير الربع سنوي للجهات </a>
         <a href="{{route('dashboard.get_users_reports_year' ,$kheta->id )}}" class="btn btn-success btn-sm" style="margin-left: 5px"> تقرير السنوي  للجهات </a>
+        <a href="{{route('dashboard.mokasherat_total' ,$kheta->id )}}" class="btn btn-success btn-sm" style="margin-left: 5px"> تقرير اجمالى مؤشرات  الجهات </a>
     </div>
 
 

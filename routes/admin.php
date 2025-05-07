@@ -145,8 +145,18 @@ Route::group(['prefix' => 'admins/dashboard', 'middleware' => 'auth:admin', 'as'
 
     Route::get('mokasherat_files_report/{kheta_id}/{year_id?}/{part?}' ,[DashboardController::class ,'mokasherat_files_report'])->name('mokasherat_files_report');
 
+    /** تقرير  اجمالى  مؤشرات الكلية */
+    Route::get('mokasherat_total/{kheta_id}/{year_id?}/{part?}' ,[DashboardController::class ,'mokasherat_total'])->name('mokasherat_total');
+    Route::get('print_mokasherat_total/{kheta_id}/{year_id?}/{part?}' ,[DashboardController::class ,'print_mokasherat_total'])->name('print_mokasherat_total');
 
-   Route::get('mokasherat_wezara/{kheta_id}/{year_id?}/{part?}' ,[DashboardController::class ,'mokasherat_wezara'])->name('mokasherat_wezara');
+
+
+
+
+
+
+
+    Route::get('mokasherat_wezara/{kheta_id}/{year_id?}/{part?}' ,[DashboardController::class ,'mokasherat_wezara'])->name('mokasherat_wezara');
     Route::get('print_mokasherat_wezara/{kheta_id}/{year_id}' ,[DashboardController::class ,'print_mokasherat_wezara'])->name('print_mokasherat_wezara');
 
 

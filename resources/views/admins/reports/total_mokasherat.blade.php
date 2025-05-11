@@ -98,7 +98,9 @@
 
                                                     @if($geha->mokasher->addedBy == 0)
                                                     @php
-                                                        $mokashers_count = \App\Models\MokasherInput::whereJsonContains('users', (string) $geha->geha_id)->count();
+                                                           // $mokashers_count = \App\Models\MokasherInput::whereJsonContains('users', (string) $geha->geha_id)->count();
+                                                            $mokashers_count =  \App\Models\MokasherGehaInput::where('geha_id' ,  $geha->geha_id)->count() ;
+
                                                     @endphp
                                                         @php
                                                             $rating = $geha->rate_part_1 + $geha->rate_part_2 + $geha->rate_part_3 + $geha->rate_part_4;

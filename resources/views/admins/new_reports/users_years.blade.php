@@ -199,42 +199,36 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @php
-                        $i = 1;
-                    @endphp
-
-                    @forelse($results as $result)
+                    @foreach($results as $result)
                         @php
-                            // Calculate the performance
-                            if ($result->mostahdf == 0) {
+                            if ($result->mostahdf == 0 && $result->rating > 0) {
+                                $performance = 100;
+                            } elseif ($result->mostahdf == 0) {
                                 $performance = 0;
                             } else {
                                 $performance = ($result->rating / $result->mostahdf) * 100;
+                                if ($performance > 100) {
+                                    $performance = 100;
+                                }
                             }
                         @endphp
-
                         @if($result->mokasher->addedBy == 0)
                             <tr>
-                                <td>{{ $result->mokasher->program->goal->objective->objective }}</td>
-                                <td>{{ $result->mokasher->program->goal->goal }}</td>
-                                <td>{{ $result->mokasher->program->program }}</td>
+                                <td>{{ $loop->iteration }}</td>
+                                <td class="text-primary">{{ $result->mokasher->program->goal->goal }}</td>
+                                <td class="text-primary">{{ $result->mokasher->program->program }}</td>
                                 <td>{{ $result->mokasher->name }}</td>
+                                <td>{{ $result->geha->geha }}</td>
                                 <td>{{ $result->mostahdf }}</td>
                                 <td>{{ $result->rating }}</td>
-                                <td style="width: 100px">
-                                    @php
-                                        $roundedPerformance = isset($performance) && $performance > 0 ? round($performance, 2) : 0;
-                                        $finalPerformance = $roundedPerformance > 100 ? 100 : $roundedPerformance;
-                                    @endphp
-
-                                    @if($finalPerformance < 50)
-                                        <span class="performance" style="background-color: #f00">{{ $finalPerformance }} %</span>
-                                    @elseif($finalPerformance >= 50 && $finalPerformance < 90)
-                                        <span class="performance" style="background-color: #f8de26">{{ $finalPerformance }} %</span>
-                                    @elseif($finalPerformance >= 90 && $finalPerformance <= 100)
-                                        <span class="performance" style="background-color: #00ff00">{{ $finalPerformance }} %</span>
+                                <td>
+                                    @if($performance < 50)
+                                        <span class="performance" style="background-color: #f00">{{ round($performance) }} %</span>
+                                    @elseif($performance >= 50 && $performance < 100)
+                                        <span class="performance" style="background-color: #f8de26">{{ round($performance) }} %</span>
+                                    @elseif($performance == 100)
+                                        <span class="performance" style="background-color: #00ff00">{{ round($performance) }} %</span>
                                     @endif
-
                                 </td>
                                 <td>
                                     @if(!empty($result->note_part_1))
@@ -250,15 +244,9 @@
                                     @endif
                                 </td>
                             </tr>
-                            @php
-                                $i++;  // Increment the index after the row is displayed
-                            @endphp
                         @endif
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center">No data available</td>
-                        </tr>
-                    @endforelse
+                    @endforeach
+
 
                     </tbody>
                 </table>

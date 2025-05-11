@@ -29,24 +29,7 @@
                 <i class="fa fa-fw fa-bars"></i>
             </button>
 
-            <!-- App Search-->
-            <form class="app-search d-none d-lg-block form-search-products-users" autocomplete="off" style="    margin-top: 48px;">
-                <div class="btn-group">
-                    <input type="text" name="criteria" class="form-control dropdown-toggle" data-bs-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false" placeholder="البحث...">
-                    <div class="dropdown-menu dropdown-menu-md p-3">
 
-                        <div class="users-result-search">
-                            <li class="text-center">no users result</li>
-                        </div>
-                        <hr>
-                        <div class="products-result-search">
-                            <li class="text-center">no products result</li>
-                        </div>
-
-                    </div>
-                </div>
-            </form>
 
         </div>
 

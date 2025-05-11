@@ -190,45 +190,35 @@
                     @if(!empty($objectives))
                         @foreach ($objectives as $ob_key => $objective)
                             @php
-                                $goals_count = $objective->goals_count;
                                 $total = 0;
-                                $ob_mokasher = [];
-                                $programs_count = [];
-                            @endphp
-                            @if(!empty($objective->goals))
-                                @foreach ($objective->goals as $key => $goal)
-                                    @php
-                                        $programs_count = $goal->programs->count();
-                                        if (!empty($goal->programs)) {
+                                $ob_mokasher_count = 0;
+
+                                if(!empty($objective->goals)) {
+                                    foreach ($objective->goals as $goal) {
+                                        if(!empty($goal->programs)) {
                                             foreach ($goal->programs as $program) {
-                                                if (!empty($program->moksherat)) {
-                                                    $ob_mokasher[] = $program->moksherat->count();
+                                                if(!empty($program->moksherat)) {
+                                                    $ob_mokasher_count += $program->moksherat->count();
                                                     foreach ($program->moksherat as $mokasher) {
-                                                        if (!empty($mokasher->mokasher_geha_inputs)) {
+                                                        if(!empty($mokasher->mokasher_geha_inputs)) {
                                                             $total += $mokasher->mokasher_geha_inputs->percentage;
                                                         }
                                                     }
                                                 }
                                             }
                                         }
-                                    @endphp
-                                @endforeach
-                            @endif
-
-                            @php
-                                // Calculate performance
-                                $performance = 0;
-                                if (!empty($goals_count) && $goals_count > 0 && !empty($programs_count) && $programs_count > 0 && !empty($ob_mokasher[$ob_key]) && $ob_mokasher[$ob_key] > 0) {
-                                    $performance = round((($total / $ob_mokasher[$ob_key]) / $programs_count) / $goals_count);
-                                    $performance = $performance > 100 ? 5 : $performance; // Adjust if >100
+                                    }
                                 }
 
-                                // Determine background color
-                                $color = '#f00'; // Default: Red (ضعيف)
+                                $performance = $ob_mokasher_count > 0 ? round($total / $ob_mokasher_count, 2) : 0;
+                                if ($performance > 100) $performance = 100;
+
+                                // Determine color
+                                $color = '#f00'; // Red for <50
                                 if ($performance >= 50 && $performance < 90) {
-                                    $color = '#f8de26'; // Yellow (متوسط)
+                                    $color = '#f8de26'; // Yellow
                                 } elseif ($performance >= 90) {
-                                    $color = '#00ff00'; // Green (ممتاز)
+                                    $color = '#00ff00'; // Green
                                 }
                             @endphp
 
@@ -240,9 +230,73 @@
                             </tr>
                         @endforeach
                     @endif
+
+
                     </tbody>
                 </table>
+                @php
+                    // حساب الإجمالي
+                    $total_performance = 0;
+                    $objectives_count = count($objectives);
 
+                    foreach ($objectives as $objective) {
+                        $total = 0;
+                        $ob_mokasher_count = 0;
+
+                        if(!empty($objective->goals)) {
+                            foreach ($objective->goals as $goal) {
+                                if(!empty($goal->programs)) {
+                                    foreach ($goal->programs as $program) {
+                                        if(!empty($program->moksherat)) {
+                                            $ob_mokasher_count += $program->moksherat->count();
+                                            foreach ($program->moksherat as $mokasher) {
+                                                if(!empty($mokasher->mokasher_geha_inputs)) {
+                                                    $total += $mokasher->mokasher_geha_inputs->percentage;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        $performance = $ob_mokasher_count > 0 ? round($total / $ob_mokasher_count, 2) : 0;
+                        $total_performance += $performance;
+                    }
+
+                    $overall_performance = $objectives_count > 0 ? round($total_performance / $objectives_count, 2) : 0;
+
+                    // تحديد لون المؤشر
+                    $overall_color = '#f00'; // أحمر لأقل من 50%
+                    if ($overall_performance >= 50 && $overall_performance < 90) {
+                        $overall_color = '#f8de26'; // أصفر
+                    } elseif ($overall_performance >= 90) {
+                        $overall_color = '#00ff00'; // أخضر
+                    }
+                @endphp
+
+                        <!-- إضافة قسم الإجمالي -->
+                <div class=" mt-4">
+                    <div class="col-md-8 offset-md-2"> <!-- لجعل العرض أكثر تركيزاً -->
+                        <div class="card" style="border: none; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                            <div class="card-header text-center" style="background-color: #f8f9fa; border-bottom: 2px solid {{ $overall_color }}; padding: 15px;">
+                                <h3 style="font-size: 18px; margin: 0; color: #495057; font-weight: 600;">
+                                    <i class="bx bx-stats" style="margin-left: 8px;"></i> النسبة الإجمالية لأداء الغايات
+                                </h3>
+                            </div>
+                            <div class="card-body text-center" style="padding: 0;">
+                                <div style="background-color: {{ $overall_color }}; padding: 25px; color: #fff; position: relative;">
+                                    <h2 style="font-size: 36px; font-weight: 700; margin: 0; letter-spacing: 1px; color: #fff">
+                                        {{ $overall_performance }}%
+                                    </h2>
+                                    <div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid {{ $overall_color }};"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
     </div>

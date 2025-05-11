@@ -359,30 +359,18 @@ class DashboardController extends Controller
         return view('admins.reports.add_mokasher_histogam.objectives', compact('objectives','kheta_id' ,  'Execution_years' , 'year_id'));
     }
 
-    public function print_Histogram_kheta_objectives_dashboard($kheta_id , $year_id): \Illuminate\View\View
+    public function print_Histogram_kheta_objectives_dashboard($kheta_id, $year_id): \Illuminate\View\View
     {
-        if(!empty($year_id)) {
-            $Execution_years = Execution_year::where('kheta_id', $kheta_id)->get();
-            $objectives = Objective::withCount('goals')->with(['goals.programs.moksherat.mokasher_geha_inputs' => function ($query) use ($year_id) {
-                $query->select('mokasher_id',
-                    DB::raw('(SUM(rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) / SUM(part_1 + part_2 + part_3 + part_4)) * 100 as percentage')
-                )->where('year_id', $year_id)->groupBy('mokasher_id');
-            }])->where('kheta_id', $kheta_id)->get();
-            return view('admins.new_reports.print_objectives', compact('Execution_years', 'objectives' ,'year_id' ,'kheta_id'));
-        }else {
-            $first_year = Execution_year::where('kheta_id', $kheta_id)->first();
-            $year_id = $first_year->id;
-            $Execution_years = Execution_year::where('kheta_id', $kheta_id)->get();
+        $Execution_years = Execution_year::where('kheta_id', $kheta_id)->get();
 
-            $objectives = Objective::withCount('goals')->with(['goals.programs.moksherat.mokasher_geha_inputs' => function ($query) {
-                $query->select('mokasher_id',
-                    DB::raw('(SUM(rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) / SUM(part_1 + part_2 + part_3 + part_4)) * 100 as percentage')
-                )->groupBy('mokasher_id');
-            }])->where('kheta_id', $kheta_id)->get();
-        }
-        return view('admins.new_reports.print_objectives', compact('objectives', 'kheta_id', 'Execution_years' , 'year'));
+        $objectives = Objective::withCount('goals')->with(['goals.programs.moksherat.mokasher_geha_inputs' => function ($query) use ($year_id) {
+            $query->select('mokasher_id',
+                DB::raw('(SUM(rate_part_1 + rate_part_2 + rate_part_3 + rate_part_4) / SUM(part_1 + part_2 + part_3 + part_4)) * 100 as percentage')
+            )->where('year_id', $year_id)->groupBy('mokasher_id');
+        }])->where('kheta_id', $kheta_id)->get();
+
+        return view('admins.new_reports.print_objectives', compact('Execution_years', 'objectives', 'year_id', 'kheta_id'));
     }
-
 
     public function Histogram_goal_statastics($kheta_id , $objective_id)
     {
